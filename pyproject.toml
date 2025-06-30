@@ -1,0 +1,127 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dayflow"
+version = "0.1.0"
+description = "Intelligent calendar workflow system for Obsidian notes"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "Mark Lifson", email = "mark.lifson@example.com"},
+]
+maintainers = [
+    {name = "Mark Lifson", email = "mark.lifson@example.com"},
+]
+requires-python = ">=3.8"
+keywords = ["obsidian", "calendar", "microsoft", "sync", "productivity"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: End Users/Desktop",
+    "License :: Other/Proprietary License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business",
+    "Topic :: Text Processing :: Markup :: Markdown",
+]
+dependencies = [
+    "click>=8.0.0",
+    "requests>=2.25.0",
+    "pyyaml>=5.4.0",
+    "python-dateutil>=2.8.0",
+    "pytz>=2021.1",
+    "rich>=10.0.0",
+    "msal>=1.20.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/dayflow"
+Documentation = "https://dayflow.readthedocs.io"
+Repository = "https://github.com/yourusername/dayflow.git"
+Issues = "https://github.com/yourusername/dayflow/issues"
+
+[project.scripts]
+dayflow = "dayflow.ui.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-click>=1.1.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+docs = [
+    "sphinx>=6.0.0",
+    "sphinx-rtd-theme>=1.2.0",
+    "sphinx-click>=4.4.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["dayflow*"]
+exclude = ["tests*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--cov=dayflow",
+    "--cov-branch",
+    "--cov-report=term-missing:skip-covered",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["dayflow"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+exclude = [
+    "tests/",
+    "build/",
+    "dist/",
+]

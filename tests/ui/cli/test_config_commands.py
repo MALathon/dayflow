@@ -1,0 +1,140 @@
+"""
+Test cases for config management CLI commands.
+"""
+
+import pytest
+from pathlib import Path
+from click.testing import CliRunner
+from unittest.mock import Mock, patch, MagicMock
+import yaml
+
+from dayflow.ui.cli import cli
+
+
+class TestConfigCommands:
+    """Test configuration management commands."""
+    
+    def setup_method(self):
+        self.runner = CliRunner()
+    
+    def test_config_show(self):
+        """Test showing current configuration."""
+        with self.runner.isolated_filesystem():
+            # Create config
+            config_dir = Path('.dayflow')
+            config_dir.mkdir()
+            config_file = config_dir / 'config.yaml'
+            config_data = {
+                'vault': {
+                    'path': '/test/vault',
+                    'locations': {
+                        'calendar_events': 'Meetings',
+                        'daily_notes': 'Daily Notes'
+                    }
+                }
+            }
+            config_file.write_text(yaml.dump(config_data))
+            
+            result = self.runner.invoke(cli, ['config', 'show'])
+            
+            assert result.exit_code == 0
+            assert "Current Configuration" in result.output
+            assert "vault:" in result.output
+            assert "path: /test/vault" in result.output
+            assert "calendar_events: Meetings" in result.output
+    
+    def test_config_show_no_config(self):
+        """Test showing config when none exists."""
+        with self.runner.isolated_filesystem():
+            result = self.runner.invoke(cli, ['config', 'show'])
+            
+            assert result.exit_code == 0
+            assert "No configuration found" in result.output
+            assert "dayflow vault init" in result.output
+    
+    def test_config_path(self):
+        """Test showing config file path."""
+        with self.runner.isolated_filesystem():
+            result = self.runner.invoke(cli, ['config', 'path'])
+            
+            assert result.exit_code == 0
+            assert ".dayflow/config.yaml" in result.output
+    
+    def test_config_edit(self):
+        """Test opening config in editor."""
+        with self.runner.isolated_filesystem():
+            # Create config
+            config_dir = Path('.dayflow')
+            config_dir.mkdir()
+            config_file = config_dir / 'config.yaml'
+            config_file.write_text('vault:\n  path: /test/vault')
+            
+            # Mock editor
+            with patch('click.edit') as mock_edit:
+                mock_edit.return_value = 'vault:\n  path: /new/vault'
+                
+                result = self.runner.invoke(cli, ['config', 'edit'])
+                
+                assert result.exit_code == 0
+                assert "Configuration updated" in result.output
+                
+                # Check file was updated
+                assert '/new/vault' in config_file.read_text()
+    
+    def test_config_reset(self):
+        """Test resetting configuration to defaults."""
+        with self.runner.isolated_filesystem():
+            # Create custom config
+            config_dir = Path('.dayflow')
+            config_dir.mkdir()
+            config_file = config_dir / 'config.yaml'
+            config_file.write_text('vault:\n  path: /custom/vault\n  custom: value')
+            
+            # Confirm reset
+            result = self.runner.invoke(cli, ['config', 'reset'], input='y\n')
+            
+            assert result.exit_code == 0
+            assert "Configuration reset to defaults" in result.output
+            
+            # Check defaults were applied
+            config = yaml.safe_load(config_file.read_text())
+            assert config['vault']['path'] == ''  # Default empty path
+            assert 'custom' not in config['vault']  # Custom field removed
+    
+    def test_config_get_value(self):
+        """Test getting specific config value."""
+        with self.runner.isolated_filesystem():
+            # Create config
+            config_dir = Path('.dayflow')
+            config_dir.mkdir()
+            config_file = config_dir / 'config.yaml'
+            config_file.write_text('vault:\n  path: /test/vault\n  locations:\n    calendar_events: Meetings')
+            
+            # Get vault path
+            result = self.runner.invoke(cli, ['config', 'get', 'vault.path'])
+            assert result.exit_code == 0
+            assert "/test/vault" in result.output
+            
+            # Get nested value
+            result = self.runner.invoke(cli, ['config', 'get', 'vault.locations.calendar_events'])
+            assert result.exit_code == 0
+            assert "Meetings" in result.output
+    
+    def test_config_set_value(self):
+        """Test setting specific config value."""
+        with self.runner.isolated_filesystem():
+            # Create config
+            config_dir = Path('.dayflow')
+            config_dir.mkdir()
+            config_file = config_dir / 'config.yaml'
+            config_file.write_text('vault:\n  path: /old/vault')
+            
+            # Set new value
+            result = self.runner.invoke(cli, ['config', 'set', 'vault.path', '/new/vault'])
+            
+            assert result.exit_code == 0
+            assert "Configuration updated" in result.output
+            
+            # Verify change
+            config = yaml.safe_load(config_file.read_text())
+            assert config['vault']['path'] == '/new/vault'
