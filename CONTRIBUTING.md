@@ -8,7 +8,7 @@ Thank you for your interest in contributing to Dayflow!
 
 1. Fork and clone the repository:
    ```bash
-   git clone https://github.com/yourusername/dayflow.git
+   git clone https://github.com/malathon/dayflow.git
    cd dayflow
    ```
 

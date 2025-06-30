@@ -1,6 +1,6 @@
 # Dayflow
 
-[![Tests](https://github.com/yourusername/dayflow/workflows/Tests/badge.svg)](https://github.com/yourusername/dayflow/actions)
+[![Tests](https://github.com/malathon/dayflow/workflows/Tests/badge.svg)](https://github.com/malathon/dayflow/actions)
 [![Python Version](https://img.shields.io/pypi/pyversions/dayflow)](https://pypi.org/project/dayflow/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
@@ -27,7 +27,7 @@ An intelligent calendar workflow system that synchronizes Microsoft 365 calendar
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/obsidian_workflow.git
+git clone https://github.com/malathon/dayflow.git
 cd obsidian_workflow
 
 # Install the package
