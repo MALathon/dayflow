@@ -55,6 +55,7 @@ class TestConfigCommands:
             assert "No configuration found" in result.output
             assert "dayflow vault init" in result.output
 
+    @pytest.mark.tdd
     def test_config_path(self):
         """Test showing config file path."""
         with self.runner.isolated_filesystem():
