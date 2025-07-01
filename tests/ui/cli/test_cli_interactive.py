@@ -5,6 +5,7 @@ These tests cover user prompts, confirmations, and interactive workflows.
 
 from unittest.mock import Mock, patch
 
+import pytest
 from click.testing import CliRunner
 
 from dayflow.core.exceptions import SyncConflictError
@@ -19,6 +20,7 @@ class TestInteractiveAuth:
     def setup_method(self):
         self.runner = CliRunner()
 
+    @pytest.mark.tdd
     def test_auth_login_interactive_flow(self):
         """Test the full interactive auth flow."""
         # Simulate user interactions
@@ -39,6 +41,7 @@ class TestInteractiveAuth:
         assert "Press Enter when you've copied the token" in result.output
         assert "Token saved successfully" in result.output
 
+    @pytest.mark.tdd
     def test_auth_login_retry_on_invalid_token(self):
         """Test retry mechanism for invalid tokens."""
         # First attempt: invalid token (too short)
@@ -62,6 +65,7 @@ class TestInteractiveGTD:
         self.runner = CliRunner()
 
     @patch("dayflow.core.gtd.GTDSystem")
+    @pytest.mark.tdd
     def test_gtd_process_interactive(self, mock_gtd):
         """Test interactive inbox processing."""
         # Mock inbox items
@@ -108,6 +112,7 @@ class TestInteractiveSync:
         self.runner = CliRunner()
 
     @patch("dayflow.core.sync.CalendarSyncEngine")
+    @pytest.mark.tdd
     def test_sync_conflict_resolution(self, mock_sync):
         """Test interactive conflict resolution during sync."""
         # Mock a sync conflict
@@ -126,6 +131,7 @@ class TestInteractiveSync:
         assert "How would you like to resolve?" in result.output
         assert "[merge/replace/skip]" in result.output
 
+    @pytest.mark.tdd
     def test_continuous_sync_confirmation(self):
         """Test confirmation for continuous sync mode."""
         with patch("dayflow.ui.cli.auth.has_valid_token", return_value=True):
@@ -146,6 +152,7 @@ class TestProgressIndicators:
         self.runner = CliRunner()
 
     @patch("dayflow.core.sync.CalendarSyncEngine")
+    @pytest.mark.tdd
     def test_sync_progress_bar(self, mock_sync):
         """Test progress bar during sync."""
 
@@ -176,6 +183,7 @@ class TestBatchOperations:
     def setup_method(self):
         self.runner = CliRunner()
 
+    @pytest.mark.tdd
     def test_batch_zettel_creation_confirmation(self):
         """Test confirmation for batch note creation."""
         with patch("dayflow.core.zettel.ZettelkastenEngine") as mock_zettel:
@@ -203,6 +211,7 @@ class TestMenuNavigation:
     def setup_method(self):
         self.runner = CliRunner()
 
+    @pytest.mark.tdd
     def test_main_menu_interface(self):
         """Test main menu interface (if implemented)."""
         # User navigates through menu
@@ -229,6 +238,7 @@ class TestMenuNavigation:
 class TestAutoCompletion:
     """Test auto-completion features."""
 
+    @pytest.mark.tdd
     def test_context_completion_in_gtd(self):
         """Test auto-completion of GTD contexts."""
         # This tests that the CLI provides completion for contexts
@@ -248,6 +258,7 @@ class TestUserPreferences:
     def setup_method(self):
         self.runner = CliRunner()
 
+    @pytest.mark.tdd
     def test_remember_user_choices(self):
         """Test that CLI remembers user preferences."""
         with self.runner.isolated_filesystem():

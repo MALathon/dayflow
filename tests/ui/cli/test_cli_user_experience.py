@@ -5,6 +5,7 @@ These tests ensure helpful error messages, clear feedback, and good UX.
 
 from unittest.mock import Mock, patch
 
+import pytest
 from click.testing import CliRunner
 
 # These imports will fail initially - expected in TDD
@@ -17,6 +18,7 @@ class TestCLIFeedback:
     def setup_method(self):
         self.runner = CliRunner()
 
+    @pytest.mark.tdd
     def test_clear_error_on_missing_config(self):
         """Test helpful error when config is missing."""
         with patch("dayflow.config.Config.load", side_effect=FileNotFoundError):
@@ -26,6 +28,7 @@ class TestCLIFeedback:
         assert "No configuration found" in result.output
         assert "Run 'dayflow config init' to create one" in result.output
 
+    @pytest.mark.tdd
     def test_helpful_vault_path_error(self):
         """Test clear guidance when vault path is invalid."""
         with patch("pathlib.Path.exists", return_value=False):
@@ -38,6 +41,7 @@ class TestCLIFeedback:
             in result.output
         )
 
+    @pytest.mark.tdd
     def test_token_expiry_warning(self):
         """Test warning when token is about to expire."""
         with patch("dayflow.auth.TokenManager.get_token_info") as mock_info:
@@ -58,6 +62,7 @@ class TestCLIColors:
     def setup_method(self):
         self.runner = CliRunner()
 
+    @pytest.mark.tdd
     def test_success_messages_are_green(self):
         """Test that success messages use green color."""
         with patch("dayflow.core.sync.CalendarSyncEngine") as mock_sync:
@@ -71,6 +76,7 @@ class TestCLIColors:
         assert "\033[32m" in _result.output  # Green color code
         assert "Successfully synced" in _result.output
 
+    @pytest.mark.tdd
     def test_error_messages_are_red(self):
         """Test that error messages use red color."""
         with patch("dayflow.core.sync.CalendarSyncEngine") as mock_sync:
@@ -81,6 +87,7 @@ class TestCLIColors:
         assert "\033[31m" in result.output  # Red color code
         assert "Error:" in result.output
 
+    @pytest.mark.tdd
     def test_warnings_are_yellow(self):
         """Test that warnings use yellow color."""
         result = self.runner.invoke(cli, ["auth", "status"], color=True)
@@ -95,6 +102,7 @@ class TestCLIValidation:
     def setup_method(self):
         self.runner = CliRunner()
 
+    @pytest.mark.tdd
     def test_invalid_date_format_help(self):
         """Test helpful error for invalid date formats."""
         result = self.runner.invoke(cli, ["sync", "--start", "invalid-date"])
@@ -104,6 +112,7 @@ class TestCLIValidation:
         assert "Expected format: YYYY-MM-DD" in result.output
         assert "Example: 2024-01-15" in result.output
 
+    @pytest.mark.tdd
     def test_invalid_interval_help(self):
         """Test helpful error for invalid interval values."""
         result = self.runner.invoke(
@@ -114,6 +123,7 @@ class TestCLIValidation:
         assert "Interval must be positive" in result.output
         assert "Minimum interval: 1 minute" in result.output
 
+    @pytest.mark.tdd
     def test_path_validation_with_suggestions(self):
         """Test path validation with helpful suggestions."""
         result = self.runner.invoke(
@@ -131,6 +141,7 @@ class TestCLIDefaults:
     def setup_method(self):
         self.runner = CliRunner()
 
+    @pytest.mark.tdd
     def test_sync_defaults_to_reasonable_range(self):
         """Test sync uses sensible default date range."""
         with patch("dayflow.core.sync.CalendarSyncEngine") as mock_sync:
@@ -147,6 +158,7 @@ class TestCLIDefaults:
             # Verify default date range
             assert call_args is not None
 
+    @pytest.mark.tdd
     def test_smart_vault_detection(self):
         """Test CLI tries to auto-detect Obsidian vault."""
         from os.path import expanduser
@@ -172,6 +184,7 @@ class TestCLIOnboarding:
     def setup_method(self):
         self.runner = CliRunner()
 
+    @pytest.mark.tdd
     def test_first_run_guidance(self):
         """Test helpful guidance on first run."""
         with self.runner.isolated_filesystem():
@@ -184,6 +197,7 @@ class TestCLIOnboarding:
         assert "2. Run 'dayflow auth login'" in result.output
         assert "3. Run 'dayflow sync'" in result.output
 
+    @pytest.mark.tdd
     def test_config_init_wizard(self):
         """Test configuration initialization wizard."""
         user_inputs = [
@@ -209,6 +223,7 @@ class TestCLIDryRun:
     def setup_method(self):
         self.runner = CliRunner()
 
+    @pytest.mark.tdd
     def test_sync_dry_run_mode(self):
         """Test dry-run shows what would happen without making changes."""
         with patch("dayflow.core.sync.CalendarSyncEngine") as mock_sync:
@@ -236,6 +251,7 @@ class TestCLIAccessibility:
     def setup_method(self):
         self.runner = CliRunner()
 
+    @pytest.mark.tdd
     def test_no_emoji_mode(self):
         """Test option to disable emoji for accessibility."""
         result = self.runner.invoke(cli, ["sync", "--no-emoji"])
@@ -248,6 +264,7 @@ class TestCLIAccessibility:
         # Should use text indicators instead
         assert "[SUCCESS]" in result.output or "Success:" in result.output
 
+    @pytest.mark.tdd
     def test_verbose_mode_for_screen_readers(self):
         """Test verbose mode provides detailed text output."""
         result = self.runner.invoke(cli, ["sync", "--verbose"])

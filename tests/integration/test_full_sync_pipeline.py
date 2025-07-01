@@ -124,6 +124,7 @@ class TestFullSyncPipeline:
                 "daily_notes": temp_vault / "Daily Notes",
             }.get(key, temp_vault / key)
         )
+        vault_config.get_setting = Mock(return_value=None)  # No folder organization
 
         vault_connection = VaultConnection(vault_config)
 

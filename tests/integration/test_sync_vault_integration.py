@@ -29,6 +29,7 @@ class TestSyncVaultIntegration:
         config = Mock(spec=VaultConfig)
         config.vault_path = Path(temp_vault)
         config.get_location.return_value = Path(temp_vault) / "Calendar Events"
+        config.get_setting = Mock(return_value=None)  # No folder organization
         return config
 
     @pytest.fixture
@@ -62,6 +63,7 @@ class TestSyncVaultIntegration:
             },
         ]
 
+    @pytest.mark.tdd
     @patch("dayflow.core.sync.GraphAPIClient")
     def test_sync_creates_notes_in_vault(
         self, mock_graph_client, vault_connection, mock_graph_events
