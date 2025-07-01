@@ -31,23 +31,23 @@ jobs:
 
     - name: Lint with flake8
       run: |
-        flake8 obsidian_cal_intel tests --max-line-length=88 --extend-ignore=E203,W503
+        flake8 dayflow tests --max-line-length=88 --extend-ignore=E203,W503
 
     - name: Check formatting with black
       run: |
-        black --check obsidian_cal_intel tests
+        black --check dayflow tests
 
     - name: Check import sorting with isort
       run: |
-        isort --check-only obsidian_cal_intel tests --profile black
+        isort --check-only dayflow tests --profile black
 
     - name: Type check with mypy
       run: |
-        mypy obsidian_cal_intel --ignore-missing-imports
+        mypy dayflow --ignore-missing-imports
 
     - name: Test with pytest
       run: |
-        pytest --cov=obsidian_cal_intel --cov-report=xml --cov-report=term
+        pytest --cov=dayflow --cov-report=xml --cov-report=term
 
     - name: Upload coverage to Codecov
       if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
