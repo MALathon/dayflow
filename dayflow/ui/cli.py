@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import click
+import yaml
 
 from dayflow import __version__
 
@@ -1211,8 +1212,6 @@ def config_reset():
         config = VaultConfig()
         config.config_path.parent.mkdir(parents=True, exist_ok=True)
 
-        import yaml
-
         with open(config.config_path, "w") as f:
             yaml.dump(VaultConfig.DEFAULT_CONFIG, f, default_flow_style=False)
 
@@ -1244,8 +1243,6 @@ def config_get(key):
 @click.argument("value")
 def config_set(key, value):
     """Set a specific configuration value."""
-    import yaml
-
     from dayflow.vault import VaultConfig
 
     config = VaultConfig()
