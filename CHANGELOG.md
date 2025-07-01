@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2025-01-15
+
+### Added
+- Date-based folder organization for calendar events
+- Time-prefixed filenames for chronological ordering within folders
+- Current meeting identification and tracking
+- Live "Current Meeting.md" shortcut in vault root
+- Visual indicators for current meetings in daily summaries
+- Configurable folder patterns (year/month/day, year/week, year/month)
+
+### Enhanced
+- Daily summaries now highlight current meetings with "⏰ **NOW**" indicator
+- ObsidianNoteFormatter supports both flat and hierarchical file organization
+- VaultConnection handles dynamic folder creation based on event dates
+
+### Fixed
+- Attendee names showing as "Unknown" in daily summaries
+- Proper handling of Microsoft Graph API attendee structure
+
 ## [0.1.0] - 2024-01-16
 
 ### Added

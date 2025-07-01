@@ -14,6 +14,9 @@ An intelligent calendar workflow system that synchronizes Microsoft 365 calendar
 - 📝 **Quick Notes**: Create notes with templates and automatic meeting context
 - 📊 **Daily Summaries**: Automatic daily overview with all meetings and action items
 - 🏗️ **Flexible Vault Structure**: Support for PARA, GTD, time-based, and custom folder structures
+- 📁 **Date-Based Organization**: Optional year/month/day folder hierarchy for calendar events
+- ⏰ **Current Meeting Tracking**: Live shortcut to current meeting with status updates
+- 🕐 **Time-Ordered Notes**: Meeting notes sorted by time within day folders
 
 ## Quick Start
 
@@ -56,6 +59,22 @@ pip install -e .
    dayflow note -t "Meeting Notes"
    ```
 
+### Enable Folder Organization (Optional)
+
+To organize calendar events by date, add to your config:
+
+```bash
+# Edit ~/.dayflow/config.yaml
+calendar:
+  folder_organization: year/month/day
+```
+
+This will:
+- Create year/month/day folders automatically
+- Prefix notes with time (e.g., "0900 - Team Meeting.md")
+- Maintain a "Current Meeting.md" shortcut in your vault root
+- Highlight current meetings in daily summaries
+
 ## Commands
 
 ### Authentication
@@ -92,7 +111,39 @@ vault:
   locations:
     calendar_events: Calendar Events
     daily_notes: Daily Notes
+
+# Optional: Enable folder organization
+calendar:
+  folder_organization: year/month/day  # Options: year/month/day, year/week, year/month
 ```
+
+## Folder Organization
+
+When `folder_organization` is configured, calendar events are organized into date-based folders:
+
+### Year/Month/Day Structure
+```
+Calendar Events/
+├── 2025/
+│   ├── 01/
+│   │   ├── 15/
+│   │   │   ├── 0900 - Morning Standup.md
+│   │   │   ├── 1100 - Project Review.md
+│   │   │   └── 1400 - Team Workshop.md
+│   │   └── 16/
+│   │       └── 1000 - Planning Session.md
+```
+
+### Features
+- **Time Prefixes**: Notes are prefixed with HHMM for chronological ordering
+- **All-Day Events**: Prefixed with "0000" to appear first
+- **Current Meeting Shortcut**: A "Current Meeting.md" file in vault root links to the active meeting
+- **Daily Summaries**: Highlight current meetings with "⏰ **NOW**" indicator
+
+### Configuration Options
+- `year/month/day`: Full date hierarchy (recommended)
+- `year/week`: Weekly folders (e.g., 2025/W03)
+- `year/month`: Monthly folders without day separation
 
 ## Architecture
 
