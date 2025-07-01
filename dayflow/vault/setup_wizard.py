@@ -4,7 +4,7 @@ Interactive setup wizard for vault configuration.
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import click
 
@@ -375,8 +375,7 @@ If you can see this file in Obsidian, your setup is working correctly! 🎉
                 if click.confirm("\nOpen in Obsidian?"):
                     import webbrowser
 
-                    obsidian_url = f"obsidian://open?vault={
-                        self.vault_path.name}&file={
-                        file_path.relative_to(
-                            self.vault_path)}"
+                    vault_name = self.vault_path.name
+                    file_rel_path = file_path.relative_to(self.vault_path)
+                    obsidian_url = f"obsidian://open?vault={vault_name}&file={file_rel_path}"
                     webbrowser.open(obsidian_url)

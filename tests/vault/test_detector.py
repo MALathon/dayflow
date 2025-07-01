@@ -5,11 +5,11 @@ Test cases for vault detection and structure analysis.
 import shutil
 import tempfile
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
-from dayflow.vault.detector import VaultDetector, VaultStructure
+from dayflow.vault.detector import VaultDetector
 
 
 class TestVaultDetector:
@@ -182,7 +182,7 @@ class TestVaultDetector:
 
         # Should return custom structure for empty vault
         assert structure.type == "custom"
-        assert structure.is_empty
+        assert structure.is_empty is True
 
     def test_vault_statistics(self):
         """Test gathering statistics about a vault."""

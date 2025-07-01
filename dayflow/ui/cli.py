@@ -86,10 +86,8 @@ def auth_status():
 
         # Show time in appropriate units
         if hours_left > 2:
-            click.echo(
-                f"Expires in {
-                    hours_left:.1f} hours ({
-                    token_info['expires_at'].strftime('%Y-%m-%d %H:%M:%S')})")
+            expires_at = token_info['expires_at'].strftime('%Y-%m-%d %H:%M:%S')
+            click.echo(f"Expires in {hours_left:.1f} hours ({expires_at})")
         else:
             click.echo(f"Expires in {minutes_left} minutes.")
 
@@ -280,7 +278,7 @@ def sync(start, end, continuous, interval, no_daily_summary):
                 notes_updated = result.get("notes_updated", 0)
                 daily_created = result.get("daily_summaries_created", 0)
                 daily_updated = result.get("daily_summaries_updated", 0)
-                sync_time = result.get("sync_time")
+                # sync_time = result.get("sync_time")  # TODO: Use for display
 
                 click.echo(f"\n✓ Synced {events_synced} active events")
 
@@ -738,7 +736,9 @@ def note(title, link_meeting, editor, template):
                                 "",
                             ]
                         )
-                        click.echo(f"✅ Linked to upcoming meeting: {upcoming['title']}")
+                        click.echo(
+                            f"✅ Linked to upcoming meeting: {upcoming['title']}"
+                        )
         except Exception as e:
             click.echo(f"Warning: Could not check for meetings - {e}")
 

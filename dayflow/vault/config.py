@@ -138,8 +138,9 @@ class VaultConfig:
         obsidian_folder = self.vault_path / ".obsidian"
         if not obsidian_folder.exists():
             raise VaultConfigError(
-                f"Path doesn't appear to be an Obsidian vault (no .obsidian folder): {
-                    self.vault_path}")
+                f"Path doesn't appear to be an Obsidian vault "
+                f"(no .obsidian folder): {self.vault_path}"
+            )
 
     def set_vault_path(self, path: str):
         """Update the vault path."""

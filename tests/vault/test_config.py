@@ -18,7 +18,6 @@ class TestVaultConfig:
     def test_find_config_in_home_directory(self):
         """Test finding config in user's home directory."""
         # Create a temporary directory structure
-        import tempfile
 
         with tempfile.TemporaryDirectory() as tmpdir:
             home_dir = Path(tmpdir) / "home"
@@ -33,7 +32,6 @@ class TestVaultConfig:
 
     def test_find_config_in_current_directory(self):
         """Test finding config in current working directory."""
-        import tempfile
 
         with tempfile.TemporaryDirectory() as tmpdir:
             home_dir = Path(tmpdir) / "home"
@@ -53,7 +51,6 @@ class TestVaultConfig:
 
     def test_create_default_config_if_none_exists(self):
         """Test creating default config when none exists."""
-        import tempfile
 
         with tempfile.TemporaryDirectory() as tmpdir:
             home_dir = Path(tmpdir) / "home"
@@ -108,7 +105,6 @@ class TestVaultConfig:
 
     def test_validate_vault_path_exists(self):
         """Test validation that configured vault path exists."""
-        import tempfile
 
         with tempfile.TemporaryDirectory() as tmpdir:
             home_dir = Path(tmpdir) / "home"

@@ -2,9 +2,8 @@
 Test cases for Microsoft Graph API client.
 """
 
-import json
-from datetime import date, datetime, timedelta
-from unittest.mock import MagicMock, Mock, patch
+from datetime import date, datetime, timezone
+from unittest.mock import Mock, patch
 
 import pytest
 

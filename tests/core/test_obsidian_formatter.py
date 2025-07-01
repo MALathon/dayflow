@@ -140,20 +140,8 @@ class TestObsidianNoteFormatter:
         """Test formatting event with body content."""
         event = {
             "subject": "Strategy Session",
-            "start_time": datetime(
-                2024,
-                1,
-                25,
-                13,
-                0,
-                tzinfo=timezone.utc),
-            "end_time": datetime(
-                2024,
-                1,
-                25,
-                15,
-                0,
-                tzinfo=timezone.utc),
+            "start_time": datetime(2024, 1, 25, 13, 0, tzinfo=timezone.utc),
+            "end_time": datetime(2024, 1, 25, 15, 0, tzinfo=timezone.utc),
             "body": "Please review the attached documents before the meeting.\n\nAgenda:\n1. Q1 Goals\n2. Budget Review",
             "is_all_day": False,
         }

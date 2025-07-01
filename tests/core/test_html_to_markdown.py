@@ -188,7 +188,8 @@ class TestHTMLToMarkdown:
         assert "Click here to join the meeting" in result
         assert "https://teams.microsoft.com" in result
         # Meeting ID should be removed (if preprocessing worked)
-        # Note: In this case, the div structure doesn't match our regex, so Meeting ID remains
+        # Note: In this case, the div structure doesn't match our regex,
+        # so Meeting ID remains
         # This is acceptable as the main goal is to clean up complex HTML
 
     def test_whitespace_handling(self):

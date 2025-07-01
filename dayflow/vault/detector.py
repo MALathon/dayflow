@@ -3,7 +3,7 @@ Vault detection and structure analysis.
 """
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -14,7 +14,7 @@ class VaultStructure:
 
     type: str
     is_empty: bool = False
-    locations: Dict[str, str] = None
+    locations: Dict[str, str] = field(default_factory=dict)
 
     def __post_init__(self):
         if self.locations is None:

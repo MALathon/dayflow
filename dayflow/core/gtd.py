@@ -37,7 +37,7 @@ class GTDSystem:
         items = []
         for file in inbox_path.glob("*.md"):
             # Read file to get metadata
-            content = file.read_text()
+            # content = file.read_text()  # TODO: Parse metadata when needed
             items.append(
                 {
                     "id": len(items) + 1,

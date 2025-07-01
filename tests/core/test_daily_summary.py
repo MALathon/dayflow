@@ -4,7 +4,7 @@ import shutil
 import tempfile
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from unittest.mock import MagicMock, Mock
+from unittest.mock import Mock
 
 import pytest
 
@@ -135,10 +135,11 @@ class TestDailySummaryGenerator:
         assert "👥 [[John Doe]], [[Jane Smith]]" in content
 
         # Check attendee truncation for project planning
-        assert (
-            "[[Alice Johnson]], [[Bob Wilson]], [[Carol Davis]], [[Dave Miller]], [[Eve Brown]] +1 more"
-            in content
+        expected_attendees = (
+            "[[Alice Johnson]], [[Bob Wilson]], [[Carol Davis]], "
+            "[[Dave Miller]], [[Eve Brown]] +1 more"
         )
+        assert expected_attendees in content
 
     def test_generate_daily_summary_time_grouping(
         self, mock_vault_connection, sample_events

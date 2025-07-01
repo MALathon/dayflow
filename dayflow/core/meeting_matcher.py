@@ -238,7 +238,6 @@ class MeetingMatcher:
 
         # If no end time, assume 1 hour duration
         if not end:
-
             assumed_end = start + timedelta(hours=1)
             if current_time > assumed_end:
                 return False
