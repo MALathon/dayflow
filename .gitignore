@@ -139,7 +139,7 @@ cython_debug/
 .idea/
 
 # VS Code
-.vscode/
+# .vscode/  # Commented out to share VS Code settings
 
 # macOS
 .DS_Store
