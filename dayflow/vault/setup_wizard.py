@@ -371,7 +371,7 @@ If you can see this file in Obsidian, your setup is working correctly! 🎉
                 file_path = (
                     self.vault_path / self.locations["calendar_events"] / filename
                 )
-                file_path.write_text(test_content)
+                file_path.write_text(test_content, encoding="utf-8")
 
                 click.echo(f"\n✅ Created test file: {filename}")
                 click.echo(f"   Location: {file_path}")

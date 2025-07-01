@@ -210,7 +210,7 @@ def auth_logout():
 @click.option(
     "--no-daily-summary", is_flag=True, help="Skip creating daily summary notes"
 )
-def sync(start, end, continuous, interval, no_daily_summary):
+def sync(start, end, continuous, interval, no_daily_summary):  # noqa: F841
     """Synchronize calendar events to Obsidian."""
     # Check if authenticated
     if not has_valid_token():
@@ -339,7 +339,7 @@ def gtd():
 @gtd.command("inbox")
 @click.option("--add", "-a", help="Add item to inbox")
 @click.option("--list", "-l", "show_list", is_flag=True, help="List inbox items")
-def gtd_inbox(add, show_list):
+def gtd_inbox(add, show_list):  # noqa: F841
     """Manage GTD inbox."""
     from dayflow.core.gtd import GTDSystem
     from dayflow.vault import VaultConfig, VaultConnection
@@ -1162,7 +1162,7 @@ def config_show():
         if config.config_path.exists():
             click.echo("Current Configuration")
             click.echo("=" * 40)
-            click.echo(config.config_path.read_text())
+            click.echo(config.config_path.read_text(encoding="utf-8"))
         else:
             click.echo("No configuration found")
             click.echo("Run 'dayflow vault init' to create configuration")
@@ -1188,7 +1188,7 @@ def config_edit():
 
     # Read current content
     if config.config_path.exists():
-        content = config.config_path.read_text()
+        content = config.config_path.read_text(encoding="utf-8")
     else:
         content = "# Dayflow Configuration\n"
 
@@ -1198,7 +1198,7 @@ def config_edit():
     if edited is not None and edited != content:
         # Save changes
         config.config_path.parent.mkdir(parents=True, exist_ok=True)
-        config.config_path.write_text(edited)
+        config.config_path.write_text(edited, encoding="utf-8")
         click.echo("✅ Configuration updated")
     else:
         click.echo("No changes made")

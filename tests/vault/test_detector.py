@@ -133,15 +133,19 @@ class TestVaultDetector:
         vault.mkdir()
 
         # Create various notes
-        (vault / "2024-01-15 Team Meeting.md").write_text("# Team Meeting")
-        (vault / "1-1 with John.md").write_text("# 1:1")
-        (vault / "Project Planning.md").write_text("# Planning")
-        (vault / "Random Note.md").write_text("# Random")
+        (vault / "2024-01-15 Team Meeting.md").write_text(
+            "# Team Meeting", encoding="utf-8"
+        )
+        (vault / "1-1 with John.md").write_text("# 1:1", encoding="utf-8")
+        (vault / "Project Planning.md").write_text("# Planning", encoding="utf-8")
+        (vault / "Random Note.md").write_text("# Random", encoding="utf-8")
 
         # Create nested meeting note
         subfolder = vault / "Work"
         subfolder.mkdir()
-        (subfolder / "2024-01-10 Client Meeting.md").write_text("# Client")
+        (subfolder / "2024-01-10 Client Meeting.md").write_text(
+            "# Client", encoding="utf-8"
+        )
 
         meeting_notes = self.detector.find_meeting_notes(vault)
 
@@ -188,13 +192,13 @@ class TestVaultDetector:
         vault.mkdir()
 
         # Create various files
-        (vault / "note1.md").write_text("# Note 1")
-        (vault / "note2.md").write_text("# Note 2")
-        (vault / "document.pdf").write_text("PDF content")
+        (vault / "note1.md").write_text("# Note 1", encoding="utf-8")
+        (vault / "note2.md").write_text("# Note 2", encoding="utf-8")
+        (vault / "document.pdf").write_text("PDF content", encoding="utf-8")
 
         subfolder = vault / "subfolder"
         subfolder.mkdir()
-        (subfolder / "note3.md").write_text("# Note 3")
+        (subfolder / "note3.md").write_text("# Note 3", encoding="utf-8")
 
         stats = self.detector.get_vault_stats(vault)
 

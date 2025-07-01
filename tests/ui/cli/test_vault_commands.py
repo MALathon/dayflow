@@ -69,7 +69,7 @@ class TestVaultCommands:
             config_dir = Path(".dayflow")
             config_dir.mkdir()
             config_file = config_dir / "config.yaml"
-            config_file.write_text("vault:\n  path: /old/path")
+            config_file.write_text("vault:\n  path: /old/path", encoding="utf-8")
 
             # Create new vault
             new_vault = Path.cwd() / "new_vault"
@@ -93,7 +93,9 @@ class TestVaultCommands:
             config_dir = Path(".dayflow")
             config_dir.mkdir()
             config_file = config_dir / "config.yaml"
-            config_file.write_text("vault:\n  path: /test/vault\n  locations: {}")
+            config_file.write_text(
+                "vault:\n  path: /test/vault\n  locations: {}", encoding="utf-8"
+            )
 
             result = self.runner.invoke(
                 cli, ["vault", "set-location", "calendar_events", "Meetings/Work"]
@@ -125,7 +127,7 @@ class TestVaultCommands:
             config_dir = Path(".dayflow")
             config_dir.mkdir()
             config_file = config_dir / "config.yaml"
-            config_file.write_text("vault:\n  path: /test/vault")
+            config_file.write_text("vault:\n  path: /test/vault", encoding="utf-8")
 
             result = self.runner.invoke(cli, ["vault", "apply-template", "gtd"])
 

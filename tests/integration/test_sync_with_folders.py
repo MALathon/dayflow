@@ -208,7 +208,7 @@ class TestSyncWithFolders:
         assert shortcut_path.exists()
 
         # Check content
-        content = shortcut_path.read_text()
+        content = shortcut_path.read_text(encoding="utf-8")
         assert "Current Project Review" in content
         assert "⏰ NOW" in content
         assert "[[" in content  # Has wiki link

@@ -45,7 +45,7 @@ tags: [calendar-sync]
 
 Meeting content here.
 """
-        meeting_file.write_text(meeting_content)
+        meeting_file.write_text(meeting_content, encoding="utf-8")
         return meetings_dir, now
 
     def test_find_current_meeting(self, temp_vault, sample_meeting_note):
@@ -95,7 +95,7 @@ type: meeting
 
 # Budget Review
 """
-        upcoming_file.write_text(upcoming_content)
+        upcoming_file.write_text(upcoming_content, encoding="utf-8")
 
         # Should find the upcoming meeting
         upcoming = matcher.find_upcoming_meeting(
@@ -125,7 +125,7 @@ type: meeting
 
 # Morning Scrum
 """
-        recent_file.write_text(recent_content)
+        recent_file.write_text(recent_content, encoding="utf-8")
 
         # Should find the recent meeting
         recent = matcher.find_recent_meeting(meetings_dir, now, lookback_minutes=30)
@@ -159,7 +159,7 @@ end_time: {(now + timedelta(minutes=end_offset)).isoformat()}
 type: meeting
 ---
 """
-            meeting_file.write_text(content)
+            meeting_file.write_text(content, encoding="utf-8")
 
         # Should return the meeting that started most recently
         current = matcher.find_current_meeting(meetings_dir, now)
@@ -189,7 +189,7 @@ is_all_day: true
 
 # Company Holiday
 """
-        allday_file.write_text(allday_content)
+        allday_file.write_text(allday_content, encoding="utf-8")
 
         # Should find the all-day meeting
         current = matcher.find_current_meeting(meetings_dir, now)
@@ -216,7 +216,7 @@ is_all_day: true
         ]
 
         for filename, content in invalid_files:
-            (meetings_dir / filename).write_text(content)
+            (meetings_dir / filename).write_text(content, encoding="utf-8")
 
         # Should not find any valid meetings
         meetings = matcher.get_all_meetings(meetings_dir)
@@ -245,7 +245,7 @@ type: meeting
 
 # Timezone Test
 """
-        meeting_file.write_text(meeting_content)
+        meeting_file.write_text(meeting_content, encoding="utf-8")
 
         # Should find the meeting regardless of timezone
         current = matcher.find_current_meeting(meetings_dir, now)
@@ -272,7 +272,7 @@ type: meeting
 
 # Meeting without end time
 """
-        meeting_file.write_text(meeting_content)
+        meeting_file.write_text(meeting_content, encoding="utf-8")
 
         # Should find it within the assumed 1-hour duration
         current = matcher.find_current_meeting(meetings_dir, now)

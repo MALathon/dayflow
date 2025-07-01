@@ -637,7 +637,9 @@ class TestCLIErrorHandling:
 
                     with self.runner.isolated_filesystem():
                         # Create mock token file
-                        Path(".graph_token").write_text('{"access_token": "test"}')
+                        Path(".graph_token").write_text(
+                            '{"access_token": "test"}', encoding="utf-8"
+                        )
 
                         result = self.runner.invoke(cli, ["sync"])
                         assert result.exit_code == 1

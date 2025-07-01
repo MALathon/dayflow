@@ -86,7 +86,7 @@ class TestDailySummaryGenerator:
         assert result_path.exists()
 
         # Check content
-        content = result_path.read_text()
+        content = result_path.read_text(encoding="utf-8")
 
         # Check frontmatter
         assert "date: 2024-01-15" in content
@@ -110,7 +110,7 @@ class TestDailySummaryGenerator:
         summary_date = date(2024, 1, 15)
 
         result_path = generator.generate_daily_summary(summary_date, sample_events)
-        content = result_path.read_text()
+        content = result_path.read_text(encoding="utf-8")
 
         # Check schedule formatting
         assert "### Schedule" in content
@@ -129,7 +129,7 @@ class TestDailySummaryGenerator:
         summary_date = date(2024, 1, 15)
 
         result_path = generator.generate_daily_summary(summary_date, sample_events)
-        content = result_path.read_text()
+        content = result_path.read_text(encoding="utf-8")
 
         # Check attendees for morning standup
         assert "👥 [[John Doe]], [[Jane Smith]]" in content
@@ -149,7 +149,7 @@ class TestDailySummaryGenerator:
         summary_date = date(2024, 1, 15)
 
         result_path = generator.generate_daily_summary(summary_date, sample_events)
-        content = result_path.read_text()
+        content = result_path.read_text(encoding="utf-8")
 
         # Check time groupings
         assert "🌅 **Morning** (1 meetings)" in content
@@ -178,7 +178,7 @@ class TestDailySummaryGenerator:
 
         generator = DailySummaryGenerator(mock_vault_connection)
         result_path = generator.generate_daily_summary(date(2024, 1, 15), events)
-        content = result_path.read_text()
+        content = result_path.read_text(encoding="utf-8")
 
         # All-day events should be listed first
         assert "### All Day" in content
@@ -208,7 +208,7 @@ class TestDailySummaryGenerator:
 
         generator = DailySummaryGenerator(mock_vault_connection)
         result_path = generator.generate_daily_summary(date(2024, 1, 15), events)
-        content = result_path.read_text()
+        content = result_path.read_text(encoding="utf-8")
 
         # Cancelled events should be struck through
         assert "~~**10:00-11:00** | [[2024-01-15 Cancelled Meeting]]~~" in content
@@ -223,7 +223,7 @@ class TestDailySummaryGenerator:
         """Test action items summary section."""
         generator = DailySummaryGenerator(mock_vault_connection)
         result_path = generator.generate_daily_summary(date(2024, 1, 15), sample_events)
-        content = result_path.read_text()
+        content = result_path.read_text(encoding="utf-8")
 
         # Check action items section
         assert "## Action Items Summary" in content
@@ -238,7 +238,7 @@ class TestDailySummaryGenerator:
         """Test daily reflection section."""
         generator = DailySummaryGenerator(mock_vault_connection)
         result_path = generator.generate_daily_summary(date(2024, 1, 15), sample_events)
-        content = result_path.read_text()
+        content = result_path.read_text(encoding="utf-8")
 
         # Check reflection section
         assert "## Daily Reflection" in content
@@ -299,7 +299,7 @@ class TestDailySummaryGenerator:
         daily_notes_path = mock_vault_connection.config.get_location("daily_notes")
         daily_notes_path.mkdir(parents=True, exist_ok=True)
         existing_file = daily_notes_path / "2024-01-15 Daily Summary.md"
-        existing_file.write_text("# Old content")
+        existing_file.write_text("# Old content", encoding="utf-8")
 
         # Update with new events
         events_by_date = {
@@ -320,7 +320,7 @@ class TestDailySummaryGenerator:
         assert stats["total"] == 1
 
         # Check content was updated
-        new_content = existing_file.read_text()
+        new_content = existing_file.read_text(encoding="utf-8")
         assert "Old content" not in new_content
         assert "[[2024-01-15 Updated Meeting]]" in new_content
 
@@ -337,7 +337,7 @@ class TestDailySummaryGenerator:
 
         generator = DailySummaryGenerator(mock_vault_connection)
         result_path = generator.generate_daily_summary(date(2024, 1, 15), events)
-        content = result_path.read_text()
+        content = result_path.read_text(encoding="utf-8")
 
         assert "🌙 **Evening** (1 meetings)" in content
         assert "18:00 - [[2024-01-15 Evening Review]]" in content
@@ -375,7 +375,7 @@ class TestDailySummaryGenerator:
 
         generator = DailySummaryGenerator(mock_vault_connection)
         result_path = generator.generate_daily_summary(date(2024, 1, 15), events)
-        content = result_path.read_text()
+        content = result_path.read_text(encoding="utf-8")
 
         # Check that names appear correctly, not "Unknown"
         assert "John Doe" in content
@@ -414,7 +414,7 @@ class TestDailySummaryGenerator:
 
         generator = DailySummaryGenerator(mock_vault_connection)
         result_path = generator.generate_daily_summary(date(2024, 1, 15), events)
-        content = result_path.read_text()
+        content = result_path.read_text(encoding="utf-8")
 
         # Check all formats are handled
         assert "Graph User" in content

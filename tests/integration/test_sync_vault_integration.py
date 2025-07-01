@@ -109,7 +109,7 @@ class TestSyncVaultIntegration:
         calendar_folder = vault_connection.config.get_location("calendar_events")
         calendar_folder.mkdir(parents=True, exist_ok=True)
         existing_file = calendar_folder / "2024-01-15 Team Standup.md"
-        existing_file.write_text("# Old content")
+        existing_file.write_text("# Old content", encoding="utf-8")
 
         # Setup mock
         mock_client_instance = mock_graph_client.return_value
@@ -128,7 +128,7 @@ class TestSyncVaultIntegration:
         assert result["notes_updated"] == 1  # One updated
 
         # Check content was updated
-        content = existing_file.read_text()
+        content = existing_file.read_text(encoding="utf-8")
         assert "# Team Standup" in content
         assert "Old content" not in content
 

@@ -144,7 +144,7 @@ class TestCurrentMeeting:
         )
 
         # Check content
-        content = shortcut_path.read_text()
+        content = shortcut_path.read_text(encoding="utf-8")
         assert "Current Meeting" in content
         assert "[[" in content  # Link to actual meeting note
         assert "]]" in content  # Closing link bracket
@@ -156,14 +156,14 @@ class TestCurrentMeeting:
 
         # Create a dummy shortcut
         shortcut_path = vault_connection.config.vault_path / "Current Meeting.md"
-        shortcut_path.write_text("Old meeting")
+        shortcut_path.write_text("Old meeting", encoding="utf-8")
 
         # Clear when no current meeting
         manager.update_current_meeting_shortcut(None)
 
         # Should either not exist or have placeholder content
         if shortcut_path.exists():
-            content = shortcut_path.read_text()
+            content = shortcut_path.read_text(encoding="utf-8")
             assert "No meeting currently in progress" in content
 
     def test_next_meeting_info(self, vault_connection, sample_events):
@@ -227,7 +227,7 @@ class TestCurrentMeeting:
             summary_date, sample_events, current_meeting=current
         )
 
-        content = summary_path.read_text()
+        content = summary_path.read_text(encoding="utf-8")
 
         # Current meeting should be highlighted
         assert "⏰ **NOW**" in content

@@ -24,7 +24,7 @@ class TestVaultConfig:
             config_dir = home_dir / ".dayflow"
             config_dir.mkdir(parents=True)
             config_file = config_dir / "config.yaml"
-            config_file.write_text("vault:\n  path: /test/vault")
+            config_file.write_text("vault:\n  path: /test/vault", encoding="utf-8")
 
             with patch("pathlib.Path.home", return_value=home_dir):
                 config = VaultConfig()
@@ -42,7 +42,7 @@ class TestVaultConfig:
             config_dir = project_dir / ".dayflow"
             config_dir.mkdir(parents=True)
             config_file = config_dir / "config.yaml"
-            config_file.write_text("vault:\n  path: /test/vault")
+            config_file.write_text("vault:\n  path: /test/vault", encoding="utf-8")
 
             with patch("pathlib.Path.home", return_value=home_dir):
                 with patch("pathlib.Path.cwd", return_value=project_dir):
@@ -64,7 +64,7 @@ class TestVaultConfig:
                 assert expected_path.exists()
 
                 # Check content
-                content = yaml.safe_load(expected_path.read_text())
+                content = yaml.safe_load(expected_path.read_text(encoding="utf-8"))
                 assert "vault" in content
                 assert "path" in content["vault"]
                 assert "locations" in content["vault"]
@@ -113,7 +113,9 @@ class TestVaultConfig:
 
             # Create config pointing to nonexistent vault
             config_file = config_dir / "config.yaml"
-            config_file.write_text("vault:\n  path: /nonexistent/path")
+            config_file.write_text(
+                "vault:\n  path: /nonexistent/path", encoding="utf-8"
+            )
 
             with patch("pathlib.Path.home", return_value=home_dir):
                 config = VaultConfig()

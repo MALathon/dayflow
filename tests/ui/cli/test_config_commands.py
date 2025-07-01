@@ -35,7 +35,7 @@ class TestConfigCommands:
                     },
                 }
             }
-            config_file.write_text(yaml.dump(config_data))
+            config_file.write_text(yaml.dump(config_data), encoding="utf-8")
 
             result = self.runner.invoke(cli, ["config", "show"])
 
@@ -71,7 +71,7 @@ class TestConfigCommands:
             config_dir = Path(".dayflow")
             config_dir.mkdir()
             config_file = config_dir / "config.yaml"
-            config_file.write_text("vault:\n  path: /test/vault")
+            config_file.write_text("vault:\n  path: /test/vault", encoding="utf-8")
 
             # Mock editor
             with patch("click.edit") as mock_edit:
@@ -93,7 +93,9 @@ class TestConfigCommands:
             config_dir = Path(".dayflow")
             config_dir.mkdir()
             config_file = config_dir / "config.yaml"
-            config_file.write_text("vault:\n  path: /custom/vault\n  custom: value")
+            config_file.write_text(
+                "vault:\n  path: /custom/vault\n  custom: value", encoding="utf-8"
+            )
 
             # Confirm reset
             result = self.runner.invoke(cli, ["config", "reset"], input="y\n")
@@ -118,7 +120,7 @@ class TestConfigCommands:
                 "vault:\n  path: /test/vault\n  locations:\n    "
                 "calendar_events: Meetings"
             )
-            config_file.write_text(config_data)
+            config_file.write_text(config_data, encoding="utf-8")
 
             # Get vault path
             result = self.runner.invoke(cli, ["config", "get", "vault.path"])
@@ -140,7 +142,7 @@ class TestConfigCommands:
             config_dir = Path(".dayflow")
             config_dir.mkdir()
             config_file = config_dir / "config.yaml"
-            config_file.write_text("vault:\n  path: /old/vault")
+            config_file.write_text("vault:\n  path: /old/vault", encoding="utf-8")
 
             # Set new value
             result = self.runner.invoke(

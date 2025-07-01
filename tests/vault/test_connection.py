@@ -88,14 +88,14 @@ class TestVaultConnection:
         meetings_folder = self.vault_path / "Meetings"
         meetings_folder.mkdir()
         test_file = meetings_folder / "existing.md"
-        test_file.write_text("existing content")
+        test_file.write_text("existing content", encoding="utf-8")
 
         # Ensure folder exists
         result = conn.ensure_folder_exists("calendar_events")
 
         # Should not delete existing content
         assert test_file.exists()
-        assert test_file.read_text() == "existing content"
+        assert test_file.read_text(encoding="utf-8") == "existing content"
         assert result == meetings_folder
 
     def test_write_note_basic(self):
@@ -117,7 +117,7 @@ Meeting notes here."""
         # Check the note was written
         assert file_path.exists()
         assert file_path.name == "2024-01-15 Team Standup.md"
-        assert file_path.read_text() == content
+        assert file_path.read_text(encoding="utf-8") == content
 
         # Check it's in the right location
         assert file_path.parent == self.vault_path / "Meetings"
@@ -133,7 +133,7 @@ Meeting notes here."""
 
         # Check location
         assert file_path.parent == self.vault_path / "People"
-        assert file_path.read_text() == content
+        assert file_path.read_text(encoding="utf-8") == content
 
     def test_write_note_overwrites_existing(self):
         """Test that writing a note overwrites existing files."""
@@ -146,7 +146,7 @@ Meeting notes here."""
         file_path = conn.write_note("New content", "test.md")
 
         # Should have new content
-        assert file_path.read_text() == "New content"
+        assert file_path.read_text(encoding="utf-8") == "New content"
 
     def test_write_note_handles_invalid_filenames(self):
         """Test handling of invalid filenames."""

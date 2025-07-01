@@ -154,7 +154,7 @@ class TestFullSyncPipeline:
         standup_note = meetings_dir / "2024-01-15 Team Standup.md"
         assert standup_note.exists()
 
-        standup_content = standup_note.read_text()
+        standup_content = standup_note.read_text(encoding="utf-8")
         # Check attendees are properly formatted
         assert "John Doe" in standup_content
         assert "Jane Smith" in standup_content
@@ -173,7 +173,7 @@ class TestFullSyncPipeline:
         review_note = meetings_dir / "2024-01-15 Project Review.md"
         assert review_note.exists()
 
-        review_content = review_note.read_text()
+        review_content = review_note.read_text(encoding="utf-8")
         # Check attendees with missing name
         assert "Alice Johnson" in review_content
         assert "noreply@example.com" in review_content  # Falls back to email
@@ -201,7 +201,7 @@ class TestFullSyncPipeline:
         daily_summary = daily_notes_dir / "2024-01-15 Daily Summary.md"
         assert daily_summary.exists()
 
-        summary_content = daily_summary.read_text()
+        summary_content = daily_summary.read_text(encoding="utf-8")
         # Check summary content
         assert "2024-01-15 - Daily Summary" in summary_content
         assert "2 meetings today" in summary_content

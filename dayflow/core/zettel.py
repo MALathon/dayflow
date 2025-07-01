@@ -116,7 +116,7 @@ class ZettelkastenEngine:
 
         # Simple heuristic: literature notes without "processed" tag
         for file in lit_path.glob("*.md"):
-            content = file.read_text()
+            content = file.read_text(encoding="utf-8")
             if "processed: true" not in content and "#processed" not in content:
                 unprocessed.append(file)
 
@@ -134,7 +134,7 @@ class ZettelkastenEngine:
         if not literature_note_path.exists():
             return []
 
-        content = literature_note_path.read_text()
+        content = literature_note_path.read_text(encoding="utf-8")
         suggestions = []
 
         # Extract key concepts (simplified - looks for headers and bold text)
@@ -208,7 +208,7 @@ class ZettelkastenEngine:
             loc_path = self.config.get_location(location) if self.config else None
             if loc_path and loc_path.exists():
                 for file in loc_path.glob("*.md"):
-                    content = file.read_text()
+                    content = file.read_text(encoding="utf-8")
                     if query.lower() in content.lower():
                         # Find the matching line
                         for line in content.split("\n"):
