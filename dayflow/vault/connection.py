@@ -193,7 +193,8 @@ class VaultConnection:
         Returns:
             Path to the date-organized folder
         """
-        parts = pattern.lower().split("/")
+        # Handle both Unix and Windows path separators
+        parts = pattern.lower().replace("\\", "/").split("/")
         folder = base_folder
 
         for part in parts:

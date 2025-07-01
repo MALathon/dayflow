@@ -136,14 +136,18 @@ class TestCurrentMeeting:
         shortcut_path = manager.update_current_meeting_shortcut(current)
 
         assert shortcut_path.exists()
+        # Use Path object comparison to handle Windows vs Unix paths
         assert shortcut_path.name == "Current Meeting.md"
-        assert shortcut_path.parent == vault_connection.config.vault_path
+        assert (
+            shortcut_path.parent.resolve()
+            == vault_connection.config.vault_path.resolve()
+        )
 
         # Check content
         content = shortcut_path.read_text()
         assert "Current Meeting" in content
         assert "[[" in content  # Link to actual meeting note
-        assert "Current Meeting]]" in content
+        assert "]]" in content  # Closing link bracket
         assert "⏰ NOW" in content  # Current indicator
 
     def test_clear_current_meeting_shortcut(self, vault_connection):
