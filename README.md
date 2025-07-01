@@ -1,6 +1,7 @@
 # Dayflow
 
 [![Tests](https://github.com/malathon/dayflow/workflows/Tests/badge.svg)](https://github.com/malathon/dayflow/actions)
+[![codecov](https://codecov.io/gh/MALathon/dayflow/branch/main/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/MALathon/dayflow)
 [![Python Version](https://img.shields.io/pypi/pyversions/dayflow)](https://pypi.org/project/dayflow/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
