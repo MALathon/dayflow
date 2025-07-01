@@ -2,13 +2,12 @@
 Microsoft Graph API client for calendar operations.
 """
 
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional
-from urllib.parse import quote
 
 import requests
 
-from dayflow.core.html_to_markdown import html_to_markdown, extract_meeting_url
+from dayflow.core.html_to_markdown import extract_meeting_url, html_to_markdown
 
 
 class GraphAPIError(Exception):
@@ -95,7 +94,8 @@ class GraphAPIClient:
         return {
             "startDateTime": start_datetime.isoformat().replace("+00:00", "Z"),
             "endDateTime": end_datetime.isoformat().replace("+00:00", "Z"),
-            "$select": "id,subject,start,end,location,attendees,body,isAllDay,isCancelled,organizer",
+            "$select": "id,subject,start,end,location,attendees,body,"
+            "isAllDay,isCancelled,organizer",
             "$orderby": "start/dateTime",
             "$top": "50",  # Page size
         }
@@ -108,7 +108,7 @@ class GraphAPIClient:
         try:
             error_data = response.json()
             error_message = error_data.get("error", {}).get("message", "Unknown error")
-        except:
+        except Exception:
             error_message = f"HTTP {response.status_code}"
 
         if response.status_code == 401:
@@ -139,13 +139,13 @@ class GraphAPIClient:
             location_str = location.get("displayName", "")
         else:
             location_str = str(location) if location else ""
-            
+
         # Extract and convert body content
         body = event.get("body", {})
         if isinstance(body, dict):
             content_type = body.get("contentType", "text")
             body_content = body.get("content", "")
-            
+
             # Convert HTML to markdown if needed
             if content_type.lower() == "html" and body_content:
                 body_content = html_to_markdown(body_content)
@@ -191,13 +191,13 @@ class GraphAPIClient:
             dt = dt.replace(tzinfo=timezone.utc)
 
         return dt
-    
+
     def _extract_online_meeting_url(self, event: Dict[str, Any]) -> Optional[str]:
         """Extract online meeting URL from event data.
-        
+
         Args:
             event: Raw event data from Graph API
-            
+
         Returns:
             Online meeting URL if found
         """
@@ -207,7 +207,7 @@ class GraphAPIClient:
             join_url = online_meeting.get("joinUrl")
             if join_url:
                 return join_url
-                
+
         # Check in body content for meeting links
         body = event.get("body", {})
         if isinstance(body, dict):
@@ -217,5 +217,5 @@ class GraphAPIClient:
                 meeting_url = extract_meeting_url(content)
                 if meeting_url:
                     return meeting_url
-                    
+
         return None

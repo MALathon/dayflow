@@ -108,13 +108,13 @@ test: add tests for daily summary generator
 ```python
 class TestFeatureName:
     """Test suite for feature."""
-    
+
     def test_happy_path(self):
         """Test normal expected behavior."""
-        
+
     def test_edge_case(self):
         """Test boundary conditions."""
-        
+
     def test_error_handling(self):
         """Test error scenarios."""
 ```
@@ -148,16 +148,16 @@ class TestFeatureName:
   ```python
   def function(param1: str, param2: int) -> bool:
       """Short description.
-      
+
       Longer description if needed.
-      
+
       Args:
           param1: Description of param1
           param2: Description of param2
-          
+
       Returns:
           Description of return value
-          
+
       Raises:
           ValueError: When validation fails
       """

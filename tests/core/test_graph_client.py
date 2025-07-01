@@ -233,7 +233,7 @@ class TestGraphAPIClient:
 
     def test_normalize_event_with_dict_location(self):
         """Test normalizing event with location as dict (Graph API format).
-        
+
         This test ensures we don't get 'expected str instance, dict found' errors.
         """
         raw_event = {
@@ -244,14 +244,14 @@ class TestGraphAPIClient:
             "location": {
                 "displayName": "Conference Room A",
                 "address": {"street": "123 Main St"},
-                "coordinates": {"latitude": 40.7128, "longitude": -74.0060}
+                "coordinates": {"latitude": 40.7128, "longitude": -74.0060},
             },
             "isAllDay": False,
             "isCancelled": False,
         }
 
         normalized = self.client._normalize_event(raw_event)
-        
+
         # Location should be extracted as string, not dict
         assert normalized["location"] == "Conference Room A"
         assert isinstance(normalized["location"], str)
@@ -271,7 +271,7 @@ class TestGraphAPIClient:
         }
 
         normalized = self.client._normalize_event(raw_event)
-        
+
         # Should handle empty dict gracefully
         assert normalized["location"] == ""
         assert isinstance(normalized["location"], str)
@@ -283,16 +283,13 @@ class TestGraphAPIClient:
             "subject": "Test Meeting",
             "start": {"dateTime": "2024-01-15T10:00:00", "timeZone": "UTC"},
             "end": {"dateTime": "2024-01-15T11:00:00", "timeZone": "UTC"},
-            "body": {
-                "contentType": "HTML",
-                "content": "<p>Meeting agenda details</p>"
-            },
+            "body": {"contentType": "HTML", "content": "<p>Meeting agenda details</p>"},
             "isAllDay": False,
             "isCancelled": False,
         }
 
         normalized = self.client._normalize_event(raw_event)
-        
+
         # Body content should be extracted and converted to markdown
         assert normalized["body"] == "Meeting agenda details"
         assert isinstance(normalized["body"], str)
@@ -301,7 +298,7 @@ class TestGraphAPIClient:
 
     def test_normalize_event_with_attendees_shows_names_not_unknown(self):
         """Test that attendee names are properly extracted, not showing as 'Unknown'.
-        
+
         This test ensures the formatter can extract names from the Graph API structure.
         """
         raw_event = {
@@ -315,38 +312,41 @@ class TestGraphAPIClient:
                     "status": {"response": "none"},
                     "emailAddress": {
                         "name": "John Doe",
-                        "address": "john.doe@example.com"
-                    }
+                        "address": "john.doe@example.com",
+                    },
                 },
                 {
                     "type": "optional",
                     "status": {"response": "accepted"},
                     "emailAddress": {
                         "name": "Jane Smith",
-                        "address": "jane.smith@example.com"
-                    }
+                        "address": "jane.smith@example.com",
+                    },
                 },
                 {
                     "type": "required",
                     "emailAddress": {
                         # No name, only email
                         "address": "noname@example.com"
-                    }
-                }
+                    },
+                },
             ],
             "isAllDay": False,
             "isCancelled": False,
         }
 
         normalized = self.client._normalize_event(raw_event)
-        
+
         # Attendees structure should be preserved for formatter
         assert len(normalized["attendees"]) == 3
         assert normalized["attendees"][0]["emailAddress"]["name"] == "John Doe"
         assert normalized["attendees"][1]["emailAddress"]["name"] == "Jane Smith"
         # Third attendee has no name, only address
         assert "name" not in normalized["attendees"][2]["emailAddress"]
-        assert normalized["attendees"][2]["emailAddress"]["address"] == "noname@example.com"
+        assert (
+            normalized["attendees"][2]["emailAddress"]["address"]
+            == "noname@example.com"
+        )
 
     def test_extract_online_meeting_url_from_online_meeting(self):
         """Test extracting Teams meeting URL from onlineMeeting property."""
@@ -355,11 +355,11 @@ class TestGraphAPIClient:
             "isOnlineMeeting": True,
             "onlineMeeting": {
                 "joinUrl": "https://teams.microsoft.com/l/meetup-join/19%3ameeting_123"
-            }
+            },
         }
 
         url = self.client._extract_online_meeting_url(event)
-        
+
         assert url == "https://teams.microsoft.com/l/meetup-join/19%3ameeting_123"
 
     def test_extract_online_meeting_url_from_body(self):
@@ -368,20 +368,20 @@ class TestGraphAPIClient:
             "subject": "Team Meeting",
             "body": {
                 "contentType": "HTML",
-                "content": '''<p>Join the meeting:</p>
+                "content": """<p>Join the meeting:</p>
                 <a href="https://teams.microsoft.com/l/meetup-join/19%3ameeting_456">
-                Click here to join</a>'''
-            }
+                Click here to join</a>""",
+            },
         }
 
         url = self.client._extract_online_meeting_url(event)
-        
+
         assert url == "https://teams.microsoft.com/l/meetup-join/19%3ameeting_456"
 
-    @patch('requests.get')
+    @patch("requests.get")
     def test_full_integration_complex_graph_response(self, mock_get):
         """Test full integration with complex Graph API response.
-        
+
         This test ensures we handle all the complex data structures from a real
         Graph API response without errors.
         """
@@ -402,16 +402,16 @@ class TestGraphAPIClient:
                             "type": "required",
                             "emailAddress": {
                                 "name": "John Doe",
-                                "address": "john@mayo.edu"
-                            }
+                                "address": "john@mayo.edu",
+                            },
                         },
                         {
-                            "type": "optional", 
+                            "type": "optional",
                             "emailAddress": {
                                 "name": "Jane Smith",
-                                "address": "jane@mayo.edu"
-                            }
-                        }
+                                "address": "jane@mayo.edu",
+                            },
+                        },
                     ],
                     "isOnlineMeeting": True,
                     "onlineMeeting": {
@@ -422,34 +422,39 @@ class TestGraphAPIClient:
                     "organizer": {
                         "emailAddress": {
                             "name": "Meeting Organizer",
-                            "address": "organizer@mayo.edu"
+                            "address": "organizer@mayo.edu",
                         }
-                    }
+                    },
                 }
             ]
         }
         mock_get.return_value = mock_response
 
         events = self.client.fetch_calendar_events(date(2024, 1, 15), date(2024, 1, 16))
-        
+
         assert len(events) == 1
         event = events[0]
-        
+
         # Verify all fields are properly normalized and no dicts where strings expected
         assert isinstance(event["location"], str)
         assert event["location"] == "Teams Meeting"
         assert isinstance(event["body"], str)
-        assert event["body"] == "Daily standup"  # HTML should be converted to plain text
-        assert event["online_meeting_url"] == "https://teams.microsoft.com/l/meetup-join/123"
+        assert (
+            event["body"] == "Daily standup"
+        )  # HTML should be converted to plain text
+        assert (
+            event["online_meeting_url"]
+            == "https://teams.microsoft.com/l/meetup-join/123"
+        )
         assert event["is_online_meeting"] is True
-        
+
         # Verify attendees are preserved with structure
         assert len(event["attendees"]) == 2
         assert event["attendees"][0]["emailAddress"]["name"] == "John Doe"
         assert event["attendees"][1]["emailAddress"]["name"] == "Jane Smith"
-        
+
         # No field should cause "expected str instance, dict found" error
-    
+
     def test_normalize_event_with_complex_teams_html(self):
         """Test normalizing event with complex Teams meeting HTML."""
         raw_event = {
@@ -487,32 +492,35 @@ class TestGraphAPIClient:
                 <p>Looking forward to seeing everyone!</p>
                 </body>
                 </html>
-                """
+                """,
             },
             "isOnlineMeeting": True,
             "isAllDay": False,
             "isCancelled": False,
         }
-        
+
         normalized = self.client._normalize_event(raw_event)
-        
+
         # Body should be converted to clean markdown
         assert "Please join us for the quarterly project review" in normalized["body"]
         assert "- Q4 accomplishments" in normalized["body"]
         assert "- Q1 goals and objectives" in normalized["body"]
         assert "- Resource allocation" in normalized["body"]
         assert "Looking forward to seeing everyone!" in normalized["body"]
-        
+
         # HTML and CSS should be stripped
         assert "@font-face" not in normalized["body"]
         assert "Segoe UI" not in normalized["body"]
         assert "<style>" not in normalized["body"]
         assert "<div>" not in normalized["body"]
-        
+
         # Teams boilerplate should be simplified
         assert "Microsoft Teams meeting" in normalized["body"]
         assert "Meeting ID: 123 456 789" not in normalized["body"]
         assert "Phone Conference ID:" not in normalized["body"]
-        
+
         # Meeting URL should be extracted
-        assert normalized["online_meeting_url"] == "https://teams.microsoft.com/l/meetup-join/19%3ameeting_ABC123XYZ"
+        assert (
+            normalized["online_meeting_url"]
+            == "https://teams.microsoft.com/l/meetup-join/19%3ameeting_ABC123XYZ"
+        )
