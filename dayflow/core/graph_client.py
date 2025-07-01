@@ -67,7 +67,7 @@ class GraphAPIClient:
 
                 # Check for next page
                 url = data.get("@odata.nextLink")
-                params = None  # Parameters are included in nextLink
+                params = {}  # Parameters are included in nextLink
 
         except ConnectionError as e:
             raise GraphAPIError(f"Network error: {str(e)}")
@@ -206,7 +206,7 @@ class GraphAPIClient:
         if online_meeting and isinstance(online_meeting, dict):
             join_url = online_meeting.get("joinUrl")
             if join_url:
-                return join_url
+                return str(join_url)
 
         # Check in body content for meeting links
         body = event.get("body", {})
@@ -216,6 +216,6 @@ class GraphAPIClient:
                 # Use the dedicated function to extract meeting URLs
                 meeting_url = extract_meeting_url(content)
                 if meeting_url:
-                    return meeting_url
+                    return str(meeting_url)
 
         return None

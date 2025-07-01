@@ -4,7 +4,7 @@ Interactive setup wizard for vault configuration.
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import click
 
@@ -117,7 +117,7 @@ class VaultSetupWizard:
                 click.echo("Invalid input. Please enter a number.")
 
         # Validate it's an Obsidian vault
-        if not (self.vault_path / ".obsidian").exists():
+        if self.vault_path and not (self.vault_path / ".obsidian").exists():
             click.echo(
                 f"\n⚠️  '{self.vault_path}' doesn't appear to be an Obsidian vault."
             )
@@ -158,7 +158,7 @@ class VaultSetupWizard:
         click.echo("-" * 40)
 
         # Location types to configure
-        location_configs = [
+        location_configs: List[Dict[str, Any]] = [
             {
                 "type": "calendar_events",
                 "name": "Calendar Events",
@@ -239,20 +239,21 @@ class VaultSetupWizard:
         suggestions = []
 
         # Check for existing meeting-related folders
-        for folder in self.vault_path.iterdir():
-            if folder.is_dir() and not folder.name.startswith("."):
-                lower_name = folder.name.lower()
-                if any(
-                    word in lower_name
-                    for word in ["meeting", "calendar", "event", "work"]
-                ):
-                    suggestions.append((folder.name, True))
+        if self.vault_path:
+            for folder in self.vault_path.iterdir():
+                if folder.is_dir() and not folder.name.startswith("."):
+                    lower_name = folder.name.lower()
+                    if any(
+                        word in lower_name
+                        for word in ["meeting", "calendar", "event", "work"]
+                    ):
+                        suggestions.append((folder.name, True))
 
         # Add structure-specific suggestions
         if self.structure:
             suggested = self.structure.get_location("calendar_events")
             path = Path(suggested)
-            exists = (self.vault_path / path).exists()
+            exists = bool(self.vault_path and (self.vault_path / path).exists())
             if suggested not in [s[0] for s in suggestions]:
                 suggestions.append((suggested, exists))
 
@@ -268,17 +269,20 @@ class VaultSetupWizard:
         suggestions = []
 
         # Check for existing daily-related folders
-        for folder in self.vault_path.iterdir():
-            if folder.is_dir() and not folder.name.startswith("."):
-                lower_name = folder.name.lower()
-                if any(word in lower_name for word in ["daily", "journal", "diary"]):
-                    suggestions.append((folder.name, True))
+        if self.vault_path:
+            for folder in self.vault_path.iterdir():
+                if folder.is_dir() and not folder.name.startswith("."):
+                    lower_name = folder.name.lower()
+                    if any(
+                        word in lower_name for word in ["daily", "journal", "diary"]
+                    ):
+                        suggestions.append((folder.name, True))
 
         # Add structure-specific suggestions
         if self.structure:
             suggested = self.structure.get_location("daily_notes")
             path = Path(suggested)
-            exists = (self.vault_path / path).exists()
+            exists = bool(self.vault_path and (self.vault_path / path).exists())
             if suggested not in [s[0] for s in suggestions]:
                 suggestions.append((suggested, exists))
 
@@ -311,7 +315,7 @@ class VaultSetupWizard:
             )
             click.echo(f"  📅 {example}")
 
-        return click.confirm("\nSave this configuration?")
+        return bool(click.confirm("\nSave this configuration?"))
 
     def _save_configuration(self):
         """Save the configuration."""

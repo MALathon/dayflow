@@ -124,7 +124,8 @@ class VaultConfig:
             return None
 
         try:
-            return self.vault_path / rel_path
+            vault_path = self.vault_path
+            return Path(vault_path / rel_path)
         except VaultConfigError:
             return None
 

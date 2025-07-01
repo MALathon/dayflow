@@ -4,7 +4,7 @@ GTD (Getting Things Done) system implementation.
 
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from dayflow.vault import VaultConfig, VaultConnection
 
@@ -30,11 +30,11 @@ class GTDSystem:
         if not self.vault_connection:
             return []
 
-        inbox_path = self.config.get_location("gtd_inbox")
+        inbox_path = self.config.get_location("gtd_inbox") if self.config else None
         if not inbox_path or not inbox_path.exists():
             return []
 
-        items = []
+        items: List[Dict[str, Any]] = []
         for file in inbox_path.glob("*.md"):
             # Read file to get metadata
             # content = file.read_text()  # TODO: Parse metadata when needed
@@ -235,7 +235,7 @@ tags: [gtd, weekly-review]
         # Try GTD location first, fall back to daily notes
         location = (
             "gtd_projects"
-            if self.config.get_location("gtd_projects")
+            if self.config and self.config.get_location("gtd_projects")
             else "daily_notes"
         )
 

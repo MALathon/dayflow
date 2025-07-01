@@ -123,7 +123,7 @@ class MeetingMatcher:
         Returns:
             List of meeting data dictionaries
         """
-        meetings = []
+        meetings: List[Dict[str, Any]] = []
 
         if not meeting_notes_path.exists():
             return meetings
@@ -269,7 +269,7 @@ class MeetingMatcher:
         # Check if meeting starts within lookahead window
         window_end = current_time + timedelta(minutes=lookahead_minutes)
 
-        return current_time <= start <= window_end
+        return bool(current_time <= start <= window_end)
 
     def is_meeting_recent(
         self, meeting: Dict[str, Any], current_time: datetime, lookback_minutes: int
@@ -300,4 +300,4 @@ class MeetingMatcher:
         # Check if meeting ended within lookback window
         window_start = current_time - timedelta(minutes=lookback_minutes)
 
-        return window_start <= end <= current_time
+        return bool(window_start <= end <= current_time)

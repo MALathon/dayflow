@@ -106,7 +106,9 @@ class ZettelkastenEngine:
         if not self.vault_connection:
             return []
 
-        lit_path = self.config.get_location("zettel_literature")
+        lit_path = (
+            self.config.get_location("zettel_literature") if self.config else None
+        )
         if not lit_path or not lit_path.exists():
             return []
 
@@ -203,7 +205,7 @@ class ZettelkastenEngine:
 
         # Search in all zettel locations
         for location in ["zettel_permanent", "zettel_literature", "zettel_fleeting"]:
-            loc_path = self.config.get_location(location)
+            loc_path = self.config.get_location(location) if self.config else None
             if loc_path and loc_path.exists():
                 for file in loc_path.glob("*.md"):
                     content = file.read_text()

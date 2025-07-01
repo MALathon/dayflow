@@ -1,7 +1,7 @@
 """Calendar synchronization engine."""
 
 from datetime import date, datetime, timedelta
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from ..vault.connection import VaultConnection
 from .current_meeting import CurrentMeetingManager
@@ -99,7 +99,7 @@ class CalendarSyncEngine:
             # Create daily summaries if enabled
             if self.create_daily_summaries and self.daily_summary_generator:
                 # Group events by date
-                events_by_date = {}
+                events_by_date: Dict[Any, List[Dict[str, Any]]] = {}
                 for event in active_events:
                     event_date = event["start_time"].date()
                     if event_date not in events_by_date:
