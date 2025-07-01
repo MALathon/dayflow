@@ -80,7 +80,11 @@ class TestStatusCommand:
             result = runner.invoke(cli, ["status"])
 
             assert result.exit_code == 0
-            assert "✅ Vault: /Users/test/ObsidianVault" in result.output
+            # Handle both forward and backward slashes for cross-platform compatibility
+            assert (
+                "✅ Vault: /Users/test/ObsidianVault" in result.output
+                or "✅ Vault: \\Users\\test\\ObsidianVault" in result.output
+            )
 
     @patch("dayflow.vault.VaultConfig")
     def test_status_vault_not_configured(self, mock_config, runner):

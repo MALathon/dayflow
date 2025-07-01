@@ -616,7 +616,11 @@ class TestStatusCommand:
                 result = self.runner.invoke(cli, ["status"])
                 assert result.exit_code == 0
                 assert "Authentication: Valid" in result.output
-                assert "Vault: /Users/test/vault" in result.output
+                # Handle both forward and backward slashes
+                assert (
+                    "Vault: /Users/test/vault" in result.output
+                    or "Vault: \\Users\\test\\vault" in result.output
+                )
 
 
 class TestCLIErrorHandling:

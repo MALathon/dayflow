@@ -245,7 +245,7 @@ class TestSyncWithFolders:
 
         assert summary_path.exists()
 
-        content = summary_path.read_text()
+        content = summary_path.read_text(encoding="utf-8")
         assert "⏰ **NOW**" in content
         assert "Current Project Review" in content
 

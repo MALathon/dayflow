@@ -61,7 +61,10 @@ class TestConfigCommands:
             result = self.runner.invoke(cli, ["config", "path"])
 
             assert result.exit_code == 0
-            assert ".dayflow/config.yaml" in result.output
+            # Check for the config file name - works on both Windows and Unix
+            assert "config.yaml" in result.output
+            # Also check for the directory name (with either separator)
+            assert ".dayflow" in result.output or ".dayflow\\" in result.output
 
     @pytest.mark.tdd
     def test_config_edit(self):

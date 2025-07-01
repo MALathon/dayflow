@@ -269,7 +269,8 @@ class VaultDetector:
                     for word in ["meeting", "calendar", "event", "appointment"]
                 ):
                     rel_path = folder.relative_to(vault_path)
-                    suggestions.append(str(rel_path))
+                    # Use forward slashes for consistency across platforms
+                    suggestions.append(str(rel_path).replace("\\", "/"))
 
         # Add default suggestions
         if not suggestions:
