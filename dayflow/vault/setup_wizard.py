@@ -377,5 +377,7 @@ If you can see this file in Obsidian, your setup is working correctly! 🎉
 
                     vault_name = self.vault_path.name
                     file_rel_path = file_path.relative_to(self.vault_path)
-                    obsidian_url = f"obsidian://open?vault={vault_name}&file={file_rel_path}"
+                    obsidian_url = (
+                        f"obsidian://open?vault={vault_name}&file={file_rel_path}"
+                    )
                     webbrowser.open(obsidian_url)

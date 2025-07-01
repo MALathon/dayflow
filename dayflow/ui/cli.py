@@ -87,7 +87,7 @@ def auth_status():
 
         # Show time in appropriate units
         if hours_left > 2:
-            expires_at = token_info['expires_at'].strftime('%Y-%m-%d %H:%M:%S')
+            expires_at = token_info["expires_at"].strftime("%Y-%m-%d %H:%M:%S")
             click.echo(f"Expires in {hours_left:.1f} hours ({expires_at})")
         else:
             click.echo(f"Expires in {minutes_left} minutes.")
@@ -296,12 +296,14 @@ def sync(start, end, continuous, interval, no_daily_summary):
                         click.echo("")
                         if daily_created > 0:
                             click.echo(
-                                f"📅 Created {daily_created} daily summary note{
-                                    's' if daily_created != 1 else ''}")
+                                f"📅 Created {daily_created} daily summary note"
+                                f"{'s' if daily_created != 1 else ''}"
+                            )
                         if daily_updated > 0:
                             click.echo(
-                                f"📅 Updated {daily_updated} daily summary note{
-                                    's' if daily_updated != 1 else ''}")
+                                f"📅 Updated {daily_updated} daily summary note"
+                                f"{'s' if daily_updated != 1 else ''}"
+                            )
                 else:
                     click.echo("  (No notes created - vault not configured)")
 
@@ -733,13 +735,12 @@ def note(title, link_meeting, editor, template):
                         content_lines.extend(
                             [
                                 "## Meeting Context",
-                                f"This note was created before: [[{meeting_note_name}]]",
+                                f"This note was created before: "
+                                f"[[{meeting_note_name}]]",
                                 "",
                             ]
                         )
-                        click.echo(
-                            f"✅ Linked to upcoming meeting: {upcoming['title']}"
-                        )
+                        click.echo(f"✅ Linked to upcoming meeting: {upcoming['title']}")
         except Exception as e:
             click.echo(f"Warning: Could not check for meetings - {e}")
 

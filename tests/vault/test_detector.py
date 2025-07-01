@@ -5,9 +5,7 @@ Test cases for vault detection and structure analysis.
 import shutil
 import tempfile
 from pathlib import Path
-from unittest.mock import Mock, patch
-
-import pytest
+from unittest.mock import patch
 
 from dayflow.vault.detector import VaultDetector
 

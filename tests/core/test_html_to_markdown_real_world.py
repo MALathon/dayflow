@@ -1,7 +1,5 @@
 """Test HTML to Markdown conversion with real-world examples."""
 
-import pytest
-
 from dayflow.core.graph_client import GraphAPIClient
 from dayflow.core.html_to_markdown import html_to_markdown
 

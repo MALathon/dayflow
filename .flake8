@@ -1,0 +1,20 @@
+[flake8]
+max-line-length = 88
+extend-ignore = E203, W503
+exclude =
+    .git,
+    __pycache__,
+    build,
+    dist,
+    .eggs,
+    *.egg-info,
+    .venv,
+    venv
+per-file-ignores =
+    tests/core/test_html_to_markdown_real_world.py:E501
+    examples/integration_example.py:E501
+    tests/core/test_graph_client.py:E501
+    tests/core/test_obsidian_formatter.py:E501
+    tests/integration/test_html_cleanup_integration.py:E501
+    tests/integration/test_full_sync_pipeline.py:E501
+    tests/ui/cli/test_config_commands.py:E501

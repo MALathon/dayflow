@@ -2,7 +2,7 @@
 Test cases for Microsoft Graph API client.
 """
 
-from datetime import date, datetime, timezone
+from datetime import date, datetime
 from unittest.mock import Mock, patch
 
 import pytest

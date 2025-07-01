@@ -4,7 +4,7 @@ Test cases for vault configuration management.
 
 import tempfile
 from pathlib import Path
-from unittest.mock import Mock, mock_open, patch
+from unittest.mock import mock_open, patch
 
 import pytest
 import yaml
@@ -57,7 +57,7 @@ class TestVaultConfig:
             home_dir.mkdir()
 
             with patch("pathlib.Path.home", return_value=home_dir):
-                config = VaultConfig()
+                VaultConfig()  # This creates the config file
 
                 # Check that config was created
                 expected_path = home_dir / ".dayflow" / "config.yaml"

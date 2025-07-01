@@ -1,12 +1,6 @@
 """Test cases for HTML to Markdown conversion."""
 
-import pytest
-
-from dayflow.core.html_to_markdown import (
-    HTMLToMarkdownConverter,
-    extract_meeting_url,
-    html_to_markdown,
-)
+from dayflow.core.html_to_markdown import extract_meeting_url, html_to_markdown
 
 
 class TestHTMLToMarkdown:

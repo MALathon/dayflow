@@ -3,10 +3,8 @@ Test cases for interactive CLI features.
 These tests cover user prompts, confirmations, and interactive workflows.
 """
 
-from datetime import datetime, timedelta
-from unittest.mock import Mock, call, patch
+from unittest.mock import Mock, patch
 
-import pytest
 from click.testing import CliRunner
 
 from dayflow.core.exceptions import SyncConflictError
@@ -29,7 +27,7 @@ class TestInteractiveAuth:
             "",  # Press enter after copying token
         ]
 
-        with patch("webbrowser.open") as mock_browser:
+        with patch("webbrowser.open") as _mock_browser:  # noqa: F841
             with patch("subprocess.check_output", return_value=b"valid_token_12345"):
                 result = self.runner.invoke(
                     cli, ["auth", "login"], input="\n".join(user_inputs)
@@ -234,7 +232,7 @@ class TestAutoCompletion:
     def test_context_completion_in_gtd(self):
         """Test auto-completion of GTD contexts."""
         # This tests that the CLI provides completion for contexts
-        completion_test = self.runner.invoke(
+        _completion_test = self.runner.invoke(  # noqa: F841
             cli,
             ["gtd", "add", "--context", "@"],  # Should trigger completion
             catch_exceptions=False,

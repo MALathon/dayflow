@@ -1,9 +1,5 @@
 """Integration test for HTML cleanup in calendar events."""
 
-from datetime import datetime, timezone
-
-import pytest
-
 from dayflow.core.graph_client import GraphAPIClient
 from dayflow.core.obsidian_formatter import ObsidianNoteFormatter
 

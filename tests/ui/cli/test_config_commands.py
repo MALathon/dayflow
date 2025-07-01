@@ -3,9 +3,8 @@ Test cases for config management CLI commands.
 """
 
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
-import pytest
 import yaml
 from click.testing import CliRunner
 
@@ -109,9 +108,11 @@ class TestConfigCommands:
             config_dir = Path(".dayflow")
             config_dir.mkdir()
             config_file = config_dir / "config.yaml"
-            config_file.write_text(
-                "vault:\n  path: /test/vault\n  locations:\n    calendar_events: Meetings"
+            config_data = (
+                "vault:\n  path: /test/vault\n  locations:\n    "
+                "calendar_events: Meetings"
             )
+            config_file.write_text(config_data)
 
             # Get vault path
             result = self.runner.invoke(cli, ["config", "get", "vault.path"])

@@ -16,10 +16,8 @@ from unittest.mock import Mock, patch
 import pytest
 from click.testing import CliRunner
 
-from dayflow.core.exceptions import NetworkError, SyncConflictError, VaultNotFoundError
-
 # These imports will fail initially - that's expected in TDD
-from dayflow.ui.cli import cli, main
+from dayflow.ui.cli import cli
 
 
 class TestCLIBasicCommands:
@@ -277,7 +275,7 @@ class TestSyncCommand:
     @patch("dayflow.vault.VaultConfig")
     @patch("dayflow.vault.VaultConnection")
     def test_sync_basic(
-        self, mock_vault_conn, mock_vault_config, mock_has_token, mock_sync_engine
+        self, _mock_vault_conn, mock_vault_config, mock_has_token, mock_sync_engine
     ):
         """Test basic sync command."""
         mock_has_token.return_value = True
@@ -318,7 +316,7 @@ class TestSyncCommand:
         """Test sync with custom date range."""
         with patch("dayflow.ui.cli.has_valid_token", return_value=True):
             with patch("dayflow.vault.VaultConfig") as mock_config:
-                with patch("dayflow.vault.VaultConnection"):
+                with patch("dayflow.vault.VaultConnection"):  # noqa  # noqa: F841
                     with patch(
                         "dayflow.core.sync.CalendarSyncEngine"
                     ) as mock_sync_engine:
@@ -374,7 +372,7 @@ class TestSyncCommand:
         """Test continuous sync mode."""
         with patch("dayflow.ui.cli.has_valid_token", return_value=True):
             with patch("dayflow.vault.VaultConfig") as mock_config:
-                with patch("dayflow.vault.VaultConnection"):
+                with patch("dayflow.vault.VaultConnection"):  # noqa  # noqa: F841
                     # Mock vault config
                     mock_config_instance = Mock()
                     mock_config_instance.validate.return_value = None
@@ -414,7 +412,7 @@ class TestGTDCommand:
         """Test showing GTD inbox items."""
         with patch("dayflow.core.gtd.GTDSystem") as mock_gtd:
             with patch("dayflow.vault.VaultConfig") as mock_config:
-                with patch("dayflow.vault.VaultConnection") as mock_conn:
+                with patch("dayflow.vault.VaultConnection"):  # noqa  # noqa: F841
                     # Mock vault config
                     mock_config_instance = Mock()
                     mock_config_instance.validate.return_value = None
@@ -436,7 +434,7 @@ class TestGTDCommand:
     def test_gtd_process(self):
         """Test processing inbox items."""
         with patch("dayflow.vault.VaultConfig") as mock_config:
-            with patch("dayflow.vault.VaultConnection") as mock_conn:
+            with patch("dayflow.vault.VaultConnection"):  # noqa
                 with patch("dayflow.core.gtd.GTDSystem") as mock_gtd:
                     # Mock vault config
                     mock_config_instance = Mock()
@@ -456,7 +454,7 @@ class TestGTDCommand:
         """Test generating weekly review."""
         with patch("dayflow.core.gtd.WeeklyReviewGenerator") as mock_review:
             with patch("dayflow.vault.VaultConfig") as mock_config:
-                with patch("dayflow.vault.VaultConnection") as mock_conn:
+                with patch("dayflow.vault.VaultConnection"):  # noqa  # noqa: F841
                     # Mock vault config
                     mock_config_instance = Mock()
                     mock_config_instance.validate.return_value = None
@@ -486,7 +484,7 @@ class TestZettelCommand:
     def test_zettel_new_note(self):
         """Test creating new Zettelkasten note."""
         with patch("dayflow.vault.VaultConfig") as mock_config:
-            with patch("dayflow.vault.VaultConnection") as mock_conn:
+            with patch("dayflow.vault.VaultConnection"):  # noqa
                 with patch("dayflow.core.zettel.ZettelkastenEngine") as mock_zettel:
                     # Mock vault config
                     mock_config_instance = Mock()
@@ -520,7 +518,7 @@ class TestZettelCommand:
         """Test suggesting permanent notes from literature notes."""
         with patch("dayflow.core.zettel.ZettelkastenEngine") as mock_zettel:
             with patch("dayflow.vault.VaultConfig") as mock_config:
-                with patch("dayflow.vault.VaultConnection") as mock_conn:
+                with patch("dayflow.vault.VaultConnection"):  # noqa  # noqa: F841
                     # Mock vault config
                     mock_config_instance = Mock()
                     mock_config_instance.validate.return_value = None
@@ -566,7 +564,7 @@ class TestConfigCommand:
     def test_config_set_vault_path(self):
         """Test setting Obsidian vault path."""
         with patch("dayflow.vault.VaultConfig") as mock_config:
-            with patch("builtins.open", create=True) as mock_open:
+            with patch("builtins.open", create=True):  # noqa
                 # Mock config instance
                 mock_config_instance = Mock()
                 mock_config_instance.config = {"vault": {"path": ""}}

@@ -53,7 +53,6 @@ class TestSyncWithFolders:
     def mock_graph_events(self):
         """Create mock calendar events."""
         # Use a fixed base date for consistent testing
-        base_date = date(2025, 1, 15)
         base_dt = datetime(2025, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
 
         return [
@@ -133,9 +132,9 @@ class TestSyncWithFolders:
 
         # Run sync
         results = engine.sync()
+        assert results["notes_created"] > 0
 
         # Verify folder structure was created
-        event_date = date(2025, 1, 15)
         expected_folder = (
             vault_connection.config.vault_path / "Calendar" / "2025" / "01" / "15"
         )
@@ -144,7 +143,6 @@ class TestSyncWithFolders:
         assert expected_folder.is_dir()
 
         # Check tomorrow's folder too
-        tomorrow = event_date + timedelta(days=1)
         tomorrow_folder = (
             vault_connection.config.vault_path / "Calendar" / "2025" / "01" / "16"
         )
@@ -166,9 +164,9 @@ class TestSyncWithFolders:
 
         # Run sync
         results = engine.sync()
+        assert results["notes_created"] > 0
 
         # Check files were created with time prefixes
-        event_date = date(2025, 1, 15)
         today_folder = (
             vault_connection.config.vault_path / "Calendar" / "2025" / "01" / "15"
         )
@@ -203,6 +201,7 @@ class TestSyncWithFolders:
 
         # Run sync
         results = engine.sync()
+        assert results["notes_created"] > 0
 
         # Check current meeting shortcut exists
         shortcut_path = vault_connection.config.vault_path / "Current Meeting.md"
@@ -234,6 +233,7 @@ class TestSyncWithFolders:
 
         # Run sync
         results = engine.sync()
+        assert results["notes_created"] > 0
 
         # Check daily summary
         event_date = date(2025, 1, 15)
@@ -279,6 +279,7 @@ class TestSyncWithFolders:
 
         # Run sync
         results = engine.sync()
+        assert results["notes_created"] > 0
 
         # Check flat structure with date prefix in filename
         calendar_folder = temp_vault / "Calendar"

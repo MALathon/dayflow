@@ -3,11 +3,8 @@ Test cases for CLI user experience.
 These tests ensure helpful error messages, clear feedback, and good UX.
 """
 
-import os
-from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 
-import pytest
 from click.testing import CliRunner
 
 # These imports will fail initially - expected in TDD
@@ -68,11 +65,11 @@ class TestCLIColors:
             mock_engine.sync.return_value = {"events_synced": 5}
             mock_sync.return_value = mock_engine
 
-            result = self.runner.invoke(cli, ["sync"], color=True)
+            _result = self.runner.invoke(cli, ["sync"], color=True)
 
         # Click uses ANSI codes for colors
-        assert "\033[32m" in result.output  # Green color code
-        assert "Successfully synced" in result.output
+        assert "\033[32m" in _result.output  # Green color code
+        assert "Successfully synced" in _result.output
 
     def test_error_messages_are_red(self):
         """Test that error messages use red color."""
@@ -141,7 +138,7 @@ class TestCLIDefaults:
             mock_sync.return_value = mock_engine
 
             with patch("dayflow.ui.cli.auth.has_valid_token", return_value=True):
-                result = self.runner.invoke(cli, ["sync"])
+                result = self.runner.invoke(cli, ["sync"])  # noqa: F841
 
             # Should sync from yesterday to 7 days ahead by default
             mock_engine.sync.assert_called_once()
@@ -152,10 +149,12 @@ class TestCLIDefaults:
 
     def test_smart_vault_detection(self):
         """Test CLI tries to auto-detect Obsidian vault."""
+        from os.path import expanduser
+
         common_paths = [
-            os.path.expanduser("~/Documents/Obsidian"),
-            os.path.expanduser("~/Obsidian"),
-            os.path.expanduser("~/Documents/ObsidianVault"),
+            expanduser("~/Documents/Obsidian"),
+            expanduser("~/Obsidian"),
+            expanduser("~/Documents/ObsidianVault"),
         ]
 
         with patch("pathlib.Path.exists") as mock_exists:

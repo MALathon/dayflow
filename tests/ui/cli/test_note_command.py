@@ -1,7 +1,5 @@
 """Tests for the note command with meeting linking."""
 
-import json
-import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import Mock, patch

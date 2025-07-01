@@ -2,13 +2,12 @@
 
 import shutil
 import tempfile
-from datetime import date, datetime, timezone
+from datetime import date
 from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest
 
-from dayflow.core.graph_client import GraphAPIClient
 from dayflow.core.sync import CalendarSyncEngine
 from dayflow.vault.config import VaultConfig
 from dayflow.vault.connection import VaultConnection

@@ -2,7 +2,7 @@
 
 import shutil
 import tempfile
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -36,7 +36,7 @@ class TestDailySummaryGenerator:
     @pytest.fixture
     def sample_events(self):
         """Create sample events for testing."""
-        base_date = date(2024, 1, 15)
+        # base_date = date(2024, 1, 15)  # Currently unused
         return [
             {
                 "subject": "Morning Standup",

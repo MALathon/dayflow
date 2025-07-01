@@ -2,8 +2,6 @@
 
 from datetime import datetime, timezone
 
-import pytest
-
 from dayflow.core.obsidian_formatter import ObsidianNoteFormatter
 
 

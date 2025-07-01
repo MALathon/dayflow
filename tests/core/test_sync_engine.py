@@ -7,7 +7,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from dayflow.core.graph_client import GraphAPIClient, GraphAPIError
+from dayflow.core.graph_client import GraphAPIError
 from dayflow.core.sync import CalendarSyncEngine
 
 
