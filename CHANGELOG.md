@@ -72,23 +72,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.0] - In Development
 
-### Planned Features
-- Automatic token refresh mechanism
-- Token expiry monitoring with proactive warnings
-- Continuous sync daemon/service
-- Incremental sync to minimize API calls
-- Multiple calendar support
-- Sync status reporting
-- Progress indicators for long operations
-
 ### Added
-- (Features will be added here as implemented)
+- **Continuous Sync Mode**: Run `dayflow sync --continuous` for automatic background syncing
+  - Configurable sync intervals (default: 10 minutes)
+  - Graceful shutdown with Ctrl+C
+  - Sync status persistence across sessions
+  - Resume from previous session on restart
+
+- **Progress Indicators**: Visual feedback during sync operations
+  - "X of Y events" display during processing
+  - Progress messages for each sync phase
+  - Countdown timer for next sync in continuous mode
+  - `--quiet` flag to suppress progress output for scripts
+
+- **Enhanced Token Management**:
+  - Token refresh prompt when expired (instead of auto-opening browser)
+  - Helpful guidance for authentication flow
+
+- **Sync Status Tracking**:
+  - Show last sync time in `dayflow status` command
+  - Track sync count and error count
+  - Persistent status file (`~/.dayflow/sync_status.json`)
 
 ### Changed
-- (Changes will be documented here)
+- Default sync interval changed from 5 to 10 minutes for continuous mode
+- Token expiration documentation updated from ~1 hour to ~24 hours
+- CalendarSyncEngine now supports progress callbacks
 
 ### Fixed
-- (Bug fixes will be documented here)
+- Python 3.8/3.9 compatibility issues in tests
+- Test hanging issues with proper mocking
+- CLI test mocking for continuous sync functionality
 
 ## [0.0.9] - 2025-07-02 (Pre-release)
 
@@ -151,7 +165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Timezone-aware datetime handling
 
 ### Known Limitations
-- Manual token refresh required (tokens expire ~1 hour)
+- Manual token refresh required (tokens expire ~24 hours)
 - Read-only calendar access
 - No continuous sync
 - Limited to primary calendar

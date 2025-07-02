@@ -208,7 +208,7 @@ docs/               # Documentation and examples
 
 ## Limitations
 
-- Requires manual token refresh (tokens expire after ~1 hour)
+- Requires manual token refresh (tokens expire after ~24 hours)
 - Read-only calendar access (cannot create/modify events)
 - Mayo Clinic: Requires manual token workflow due to security policies
 

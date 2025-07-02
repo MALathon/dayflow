@@ -164,7 +164,7 @@ The project uses pre-commit hooks that automatically:
 Currently uses manual token flow:
 1. User gets token from Microsoft Graph Explorer
 2. Token stored in `.graph_token` file
-3. Tokens expire after ~1 hour
+3. Tokens expire after ~24 hours
 4. Future versions will implement proper OAuth flow
 
 ### VS Code Integration

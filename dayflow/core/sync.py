@@ -18,6 +18,7 @@ class CalendarSyncEngine:
         access_token: str,
         vault_connection: Optional[VaultConnection] = None,
         create_daily_summaries: bool = True,
+        quiet: bool = False,
     ):
         """Initialize with access token.
 
@@ -25,10 +26,12 @@ class CalendarSyncEngine:
             access_token: Microsoft Graph API access token
             vault_connection: Optional vault connection for writing notes
             create_daily_summaries: Whether to create daily summary notes
+            quiet: If True, disables progress indicators
         """
         self.access_token = access_token
         self.graph_client = GraphAPIClient(access_token)
         self.vault_connection = vault_connection
+        self.quiet = quiet
 
         # Check if we should use time prefixes based on folder organization
         use_time_prefix = False
@@ -48,13 +51,17 @@ class CalendarSyncEngine:
         )
 
     def sync(
-        self, start_date: Optional[date] = None, end_date: Optional[date] = None
+        self,
+        start_date: Optional[date] = None,
+        end_date: Optional[date] = None,
+        progress_callback: Optional[Any] = None,
     ) -> Dict[str, Any]:
         """Perform calendar synchronization.
 
         Args:
             start_date: Start date for sync (default: yesterday)
             end_date: End date for sync (default: 7 days from today)
+            progress_callback: Optional callback for progress updates
 
         Returns:
             Dictionary with sync results including:
@@ -71,9 +78,16 @@ class CalendarSyncEngine:
             end_date = date.today() + timedelta(days=7)
 
         # Fetch events from Graph API
+        if progress_callback and not self.quiet:
+            progress_callback("fetch_start", total=None)
+
         try:
             events = self.graph_client.fetch_calendar_events(start_date, end_date)
-        except GraphAPIError:
+            if progress_callback and not self.quiet:
+                progress_callback("fetch_complete", total=len(events))
+        except GraphAPIError as e:
+            if progress_callback and not self.quiet:
+                progress_callback("fetch_error", error=str(e))
             # Re-raise Graph API errors for now
             raise
 
@@ -89,7 +103,11 @@ class CalendarSyncEngine:
         daily_summaries_updated = 0
 
         if self.vault_connection:
-            for event in active_events:
+            for i, event in enumerate(active_events):
+                if progress_callback and not self.quiet:
+                    progress_callback(
+                        "process_event", current=i + 1, total=len(active_events)
+                    )
                 created, updated = self._process_event(event)
                 if created:
                     notes_created += 1
@@ -138,6 +156,9 @@ class CalendarSyncEngine:
                         daily_summaries_updated += 1
                     else:
                         daily_summaries_created += 1
+
+        if progress_callback and not self.quiet:
+            progress_callback("sync_complete", total=len(active_events))
 
         # Return sync results
         return {
