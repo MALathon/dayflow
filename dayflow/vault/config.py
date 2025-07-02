@@ -84,7 +84,8 @@ class VaultConfig:
         import os
 
         # Check for environment variable override (useful for testing)
-        if env_config := os.environ.get("DAYFLOW_CONFIG_PATH"):
+        env_config = os.environ.get("DAYFLOW_CONFIG_PATH")
+        if env_config:
             return Path(env_config)
 
         # Check home directory first
