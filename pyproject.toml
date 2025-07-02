@@ -41,10 +41,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/malathon/dayflow"
+Homepage = "https://github.com/MALathon/dayflow"
 Documentation = "https://dayflow.readthedocs.io"
-Repository = "https://github.com/malathon/dayflow.git"
-Issues = "https://github.com/malathon/dayflow/issues"
+Repository = "https://github.com/MALathon/dayflow.git"
+Issues = "https://github.com/MALathon/dayflow/issues"
 
 [project.scripts]
 dayflow = "dayflow.ui.cli:main"

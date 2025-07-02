@@ -1,8 +1,8 @@
 # Dayflow
 
-[![Tests](https://github.com/malathon/dayflow/workflows/Tests/badge.svg)](https://github.com/malathon/dayflow/actions)
-[![codecov](https://codecov.io/gh/MALathon/dayflow/branch/main/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/MALathon/dayflow)
-[![Python Version](https://img.shields.io/pypi/pyversions/dayflow)](https://pypi.org/project/dayflow/)
+[![Tests](https://github.com/MALathon/dayflow/actions/workflows/tests.yml/badge.svg)](https://github.com/MALathon/dayflow/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/MALathon/dayflow/branch/main/graph/badge.svg)](https://codecov.io/gh/MALathon/dayflow)
+[![Python Version](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
@@ -31,7 +31,7 @@ An intelligent calendar workflow system that synchronizes Microsoft 365 calendar
 
 ```bash
 # Clone the repository
-git clone https://github.com/malathon/dayflow.git
+git clone https://github.com/MALathon/dayflow.git
 cd dayflow
 
 # Install the package

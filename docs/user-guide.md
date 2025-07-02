@@ -4,7 +4,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/malathon/dayflow.git
+git clone https://github.com/MALathon/dayflow.git
 cd dayflow
 
 # Install the package
@@ -308,4 +308,4 @@ dayflow vault set-path /path/to/other/vault
 - Run `dayflow --help` for command list
 - Run `dayflow <command> --help` for command details
 - Check [ROADMAP.md](../ROADMAP.md) for upcoming features
-- Report issues on [GitHub](https://github.com/malathon/dayflow/issues)
+- Report issues on [GitHub](https://github.com/MALathon/dayflow/issues)
