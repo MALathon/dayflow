@@ -5,12 +5,70 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.1.0] - 2025-07-02
+
+### Added
+- **Calendar Sync**: Sync Microsoft 365 calendar events to Obsidian vault
+  - Manual token authentication via Microsoft Graph Explorer
+  - Date range support for targeted syncing
+  - Event filtering and deduplication
+  - HTML to Markdown conversion for meeting descriptions
+
+- **Vault Management**: Flexible Obsidian vault configuration
+  - Auto-detection of existing Obsidian vaults
+  - Support for multiple vault structures (PARA, GTD, time-based, Zettelkasten)
+  - Interactive setup wizard
+  - Configurable folder organization (year/month/day, year/week, year/month)
+  - Time-prefixed note naming (HHMM format)
+
+- **Note Creation**: Smart note generation with meeting context
+  - Quick note command with automatic meeting linking
+  - Multiple note templates (meeting, idea, task, reference)
+  - Current meeting detection and tracking
+  - Upcoming meeting awareness (5-minute lookahead)
+  - Rich frontmatter with metadata
+
+- **Daily Summaries**: Automatic daily overview generation
+  - All meetings for the day with times and durations
+  - Current meeting highlighting
+  - Action items extraction
+  - Key decisions summary
+  - Time-ordered meeting list
+
+- **GTD System**: Getting Things Done workflow support
+  - Inbox management for capturing tasks
+  - Basic processing workflow
+  - Weekly review generator
+  - Project and context support
+
+- **Zettelkasten**: Knowledge management system
+  - Permanent, literature, and fleeting notes
+  - Unique ID generation
+  - Literature note processing
+  - Note search functionality
+  - Suggestions for unprocessed notes
+
+### Technical
+- Cross-platform support (Windows, macOS, Linux)
+- Python 3.8-3.12 compatibility
+- UTF-8 encoding throughout for international support
+- Comprehensive test suite with 75% coverage
+- CI/CD pipeline with GitHub Actions
+- Pre-commit hooks for code quality
 
 ### Changed
 - Repository moved to MALathon/dayflow
 - Updated all badges and URLs
 - Fixed Python 3.8/3.9 compatibility issues
+
+### Known Limitations
+- Manual token refresh required (~24 hour expiry)
+- No OAuth flow (uses Microsoft Graph Explorer tokens)
+- Read-only calendar access
+- No background sync service
+- Limited to primary calendar
+
+## [Unreleased]
 
 ## [0.0.9] - 2025-07-02 (Pre-release)
 
