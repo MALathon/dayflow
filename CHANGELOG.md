@@ -70,6 +70,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - In Development
+
+### Planned Features
+- Automatic token refresh mechanism
+- Token expiry monitoring with proactive warnings
+- Continuous sync daemon/service
+- Incremental sync to minimize API calls
+- Multiple calendar support
+- Sync status reporting
+- Progress indicators for long operations
+
+### Added
+- (Features will be added here as implemented)
+
+### Changed
+- (Changes will be documented here)
+
+### Fixed
+- (Bug fixes will be documented here)
+
 ## [0.0.9] - 2025-07-02 (Pre-release)
 
 ### Added
