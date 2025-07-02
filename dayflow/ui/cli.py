@@ -14,6 +14,44 @@ import yaml
 from dayflow import __version__
 
 
+def format_progress_message(current: int, total: int) -> str:
+    """Format progress message for event processing."""
+    return f"Processing event {current} of {total}..."
+
+
+def sync_with_progress(engine, start_date, end_date):
+    """Perform sync with progress indicators."""
+    events_synced = 0
+
+    def progress_callback(action, **kwargs):
+        nonlocal events_synced
+
+        if action == "fetch_start":
+            click.echo("Fetching calendar events...")
+        elif action == "fetch_complete":
+            events_synced = kwargs.get("total", 0)
+            click.echo(f"Found {events_synced} events to sync")
+        elif action == "process_event":
+            current = kwargs.get("current", 0)
+            total = kwargs.get("total", 0)
+            click.echo(format_progress_message(current, total))
+        elif action == "sync_complete":
+            click.echo("\nSync complete!")
+        elif action == "fetch_error":
+            error = kwargs.get("error", "Unknown error")
+            click.echo(f"\nError fetching events: {error}", err=True)
+
+    # Perform sync with progress callback without using progressbar
+    # The progress callbacks will handle the display
+    result = engine.sync(
+        start_date=start_date,
+        end_date=end_date,
+        progress_callback=progress_callback,
+    )
+
+    return result
+
+
 def get_token_info():
     """Get information about the current token."""
     token_file = Path(".graph_token")
@@ -152,14 +190,14 @@ def auth_login(no_interactive):
             if "exp" in payload_json:
                 expires_at = datetime.fromtimestamp(payload_json["exp"])
             else:
-                # Fallback to 1 hour if we can't decode
-                expires_at = datetime.now() + timedelta(hours=1)
+                # Fallback to 24 hours if we can't decode
+                expires_at = datetime.now() + timedelta(hours=24)
         else:
             # Fallback if not a JWT
-            expires_at = datetime.now() + timedelta(hours=1)
+            expires_at = datetime.now() + timedelta(hours=24)
     except Exception as e:
-        click.echo(f"Warning: Could not decode token expiry, assuming 1 hour: {e}")
-        expires_at = datetime.now() + timedelta(hours=1)
+        click.echo(f"Warning: Could not decode token expiry, assuming 24 hours: {e}")
+        expires_at = datetime.now() + timedelta(hours=24)
 
     # Store token with metadata
     token_data = {
@@ -205,19 +243,27 @@ def auth_logout():
 @click.option(
     "--interval",
     type=int,
-    default=5,
+    default=10,
     help="Sync interval in minutes (for continuous mode)",
 )
 @click.option(
     "--no-daily-summary", is_flag=True, help="Skip creating daily summary notes"
 )
-def sync(start, end, continuous, interval, no_daily_summary):  # noqa: F841
+@click.option(
+    "--quiet", "-q", is_flag=True, help="Suppress progress indicators (for scripts)"
+)
+def sync(start, end, continuous, interval, no_daily_summary, quiet):  # noqa: F841
     """Synchronize calendar events to Obsidian."""
     # Check if authenticated
     if not has_valid_token():
         click.echo("Error: Not authenticated or token has expired.")
-        click.echo("Please run 'dayflow auth login' to authenticate.")
-        raise click.Abort()
+        if click.confirm("Would you like to refresh your token now?"):
+            # Import here to avoid circular dependency
+            ctx = click.get_current_context()
+            ctx.invoke(auth_login)
+        else:
+            click.echo("Please run 'dayflow auth login' to authenticate.")
+            raise click.Abort()
 
     # Import here to avoid circular imports
     from dayflow.core.graph_client import GraphAPIError
@@ -249,14 +295,18 @@ def sync(start, end, continuous, interval, no_daily_summary):  # noqa: F841
 
     # Create sync engine with access token and vault connection
     engine = CalendarSyncEngine(
-        access_token, vault_connection, create_daily_summaries=not no_daily_summary
+        access_token,
+        vault_connection,
+        create_daily_summaries=not no_daily_summary,
+        quiet=quiet,
     )
 
     if continuous:
         # Continuous sync mode
-        click.echo("Continuous sync not yet implemented.")
-        # manager = ContinuousSyncManager(engine, interval)
-        # manager.start()
+        from dayflow.core.sync_daemon import ContinuousSyncManager
+
+        manager = ContinuousSyncManager(engine, interval)
+        manager.start()
     else:
         # Single sync
         try:
@@ -270,8 +320,11 @@ def sync(start, end, continuous, interval, no_daily_summary):  # noqa: F841
             else:
                 click.echo("Syncing events with default date range...")
 
-            # Perform sync
-            result = engine.sync(start_date=start_date, end_date=end_date)
+            # Perform sync with progress indicators if not quiet
+            if quiet:
+                result = engine.sync(start_date=start_date, end_date=end_date)
+            else:
+                result = sync_with_progress(engine, start_date, end_date)
 
             # Display results
             if result:
@@ -1357,6 +1410,33 @@ def status():
             click.echo("No meeting notes found")
     except Exception as e:
         click.echo(f"Unable to check meetings: {e}")
+
+    # Check sync status
+    from dayflow.core.sync_status import get_sync_status
+
+    sync_status = get_sync_status()
+
+    if sync_status:
+        click.echo("\nSync Status")
+        click.echo("-" * 40)
+
+        if sync_status.get("last_sync_datetime"):
+            time_since = sync_status["time_since_last_sync"]
+            hours = int(time_since.total_seconds() / 3600)
+            minutes = int((time_since.total_seconds() % 3600) / 60)
+
+            if hours > 0:
+                time_str = f"{hours}h {minutes}m ago"
+            else:
+                time_str = f"{minutes}m ago"
+
+            click.echo(f"Last sync: {time_str}")
+            click.echo(f"Total syncs: {sync_status.get('sync_count', 0)}")
+
+            if sync_status.get("error_count", 0) > 0:
+                click.echo(f"⚠️  Errors: {sync_status['error_count']}")
+        else:
+            click.echo("No sync history available")
 
 
 def main():

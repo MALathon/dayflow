@@ -249,7 +249,8 @@ class TestSyncCommand:
         """
         # Ensure no token exists
         with self.runner.isolated_filesystem():
-            result = self.runner.invoke(cli, ["sync"])
+            # Decline the token refresh prompt
+            result = self.runner.invoke(cli, ["sync"], input="n\n")
 
             # Should fail with error code
             assert result.exit_code == 1
@@ -260,7 +261,10 @@ class TestSyncCommand:
                 or "no token" in result.output.lower()
             )
 
-            # Helpful guidance
+            # Should prompt for token refresh
+            assert "Would you like to refresh your token now?" in result.output
+
+            # Helpful guidance after declining
             assert "auth login" in result.output
 
             # Should NOT have attempted sync
@@ -269,6 +273,32 @@ class TestSyncCommand:
             # Should not show sync-related messages
             assert "Syncing" not in result.output
             assert "Fetching events" not in result.output
+
+    @patch("dayflow.core.sync.CalendarSyncEngine")
+    def test_sync_with_token_refresh_accept(self, mock_sync_engine):
+        """Test sync prompts for token refresh when not authenticated and accepts.
+
+        Expected behavior:
+        - Should prompt to refresh token
+        - When accepted, should trigger auth login flow
+        - Should open browser for authentication
+        """
+        with self.runner.isolated_filesystem():
+            with patch("webbrowser.open") as mock_browser:
+                with patch("subprocess.check_output") as mock_clipboard:
+                    with patch("click.pause"):  # Mock the pause to avoid waiting
+                        # Mock clipboard to return a valid token
+                        mock_clipboard.return_value = b"a" * 200  # Long enough token
+
+                        # Accept the token refresh prompt
+                        result = self.runner.invoke(cli, ["sync"], input="y\n")
+
+                        # Should open browser
+                        mock_browser.assert_called_once_with(
+                            "https://developer.microsoft.com/en-us/graph/graph-explorer"
+                        )
+                        assert "Opening Microsoft Graph Explorer" in result.output
+                        assert "Token saved successfully!" in result.output
 
     @patch("dayflow.core.sync.CalendarSyncEngine")
     @patch("dayflow.ui.cli.has_valid_token")
@@ -303,12 +333,17 @@ class TestSyncCommand:
                 json.dump(
                     {
                         "access_token": "mock_token",
-                        "expires_at": (datetime.now() + timedelta(hours=1)).isoformat(),
+                        "expires_at": (
+                            datetime.now() + timedelta(hours=24)
+                        ).isoformat(),
                     },
                     f,
                 )
 
             result = self.runner.invoke(cli, ["sync"])
+            if result.exit_code != 0:
+                print(f"Output: {result.output}")
+                print(f"Exception: {result.exception}")
             assert result.exit_code == 0
             assert "Synced 5 active events" in result.output
 
@@ -343,7 +378,7 @@ class TestSyncCommand:
                                     {
                                         "access_token": "mock_token",
                                         "expires_at": (
-                                            datetime.now() + timedelta(hours=1)
+                                            datetime.now() + timedelta(hours=24)
                                         ).isoformat(),
                                     },
                                     f,
@@ -372,34 +407,48 @@ class TestSyncCommand:
         """Test continuous sync mode."""
         with patch("dayflow.ui.cli.has_valid_token", return_value=True):
             with patch("dayflow.vault.VaultConfig") as mock_config:
-                with patch("dayflow.vault.VaultConnection"):  # noqa  # noqa: F841
-                    # Mock vault config
-                    mock_config_instance = Mock()
-                    mock_config_instance.validate.return_value = None
-                    mock_config_instance.vault_path = Path("/test/vault")
-                    mock_config.return_value = mock_config_instance
+                with patch("dayflow.vault.VaultConnection"):
+                    with patch("dayflow.core.sync.CalendarSyncEngine"):
+                        # Mock ContinuousSyncManager to prevent actual sync
+                        with patch(
+                            "dayflow.core.sync_daemon.ContinuousSyncManager"
+                        ) as mock_manager:
+                            # Mock vault config
+                            mock_config_instance = Mock()
+                            mock_config_instance.validate.return_value = None
+                            mock_config_instance.vault_path = Path("/test/vault")
+                            mock_config.return_value = mock_config_instance
 
-                    # Create a mock token file
-                    with self.runner.isolated_filesystem():
-                        token_file = Path(".graph_token")
-                        with open(token_file, "w") as f:
-                            json.dump(
-                                {
-                                    "access_token": "mock_token",
-                                    "expires_at": (
-                                        datetime.now() + timedelta(hours=1)
-                                    ).isoformat(),
-                                },
-                                f,
-                            )
+                            # Create a mock manager instance
+                            manager_instance = Mock()
+                            mock_manager.return_value = manager_instance
 
-                        result = self.runner.invoke(
-                            cli, ["sync", "--continuous", "--interval", "5"]
-                        )
+                            # Create a mock token file
+                            with self.runner.isolated_filesystem():
+                                token_file = Path(".graph_token")
+                                with open(token_file, "w") as f:
+                                    json.dump(
+                                        {
+                                            "access_token": "mock_token",
+                                            "expires_at": (
+                                                datetime.now() + timedelta(hours=24)
+                                            ).isoformat(),
+                                        },
+                                        f,
+                                    )
 
-                        # Currently not implemented
-                        assert result.exit_code == 0
-                        assert "Continuous sync not yet implemented" in result.output
+                                result = self.runner.invoke(
+                                    cli, ["sync", "--continuous", "--interval", "5"]
+                                )
+
+                                # Should successfully start continuous sync
+                                assert result.exit_code == 0
+                                # Verify manager was created with correct interval
+                                mock_manager.assert_called_once()
+                                args = mock_manager.call_args
+                                assert args[0][1] == 5  # interval_minutes
+                                # Verify start was called
+                                manager_instance.start.assert_called_once()
 
 
 class TestGTDCommand:
