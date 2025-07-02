@@ -139,7 +139,7 @@ cython_debug/
 .idea/
 
 # VS Code
-# .vscode/  # Commented out to share VS Code settings
+.vscode/
 
 # macOS
 .DS_Store
@@ -151,3 +151,25 @@ cython_debug/
 
 # Ruff
 .ruff_cache/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
+# Log files
+*.log
+
+# Test artifacts
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.cover
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.egg

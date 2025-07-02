@@ -1154,18 +1154,37 @@ def config():
 @config.command("show")
 def config_show():
     """Show current configuration."""
+    import os
+    from pathlib import Path
+
     from dayflow.vault import VaultConfig
+
+    # Check if config exists first
+    env_config = os.environ.get("DAYFLOW_CONFIG_PATH")
+    if env_config:
+        config_path = Path(env_config)
+    else:
+        # Follow VaultConfig's search order
+        home_config = Path.home() / ".dayflow" / "config.yaml"
+        local_config = Path.cwd() / ".dayflow" / "config.yaml"
+
+        if home_config.exists():
+            config_path = home_config
+        elif local_config.exists():
+            config_path = local_config
+        else:
+            config_path = home_config  # Default
+
+    if not config_path.exists():
+        click.echo("No configuration found")
+        click.echo("Run 'dayflow vault init' to create configuration")
+        return
 
     try:
         config = VaultConfig()
-
-        if config.config_path.exists():
-            click.echo("Current Configuration")
-            click.echo("=" * 40)
-            click.echo(config.config_path.read_text(encoding="utf-8"))
-        else:
-            click.echo("No configuration found")
-            click.echo("Run 'dayflow vault init' to create configuration")
+        click.echo("Current Configuration")
+        click.echo("=" * 40)
+        click.echo(config.config_path.read_text(encoding="utf-8"))
     except Exception as e:
         click.echo(f"Error reading configuration: {e}")
 

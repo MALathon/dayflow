@@ -15,7 +15,7 @@ class TestConfigCommands:
     """Test configuration management commands."""
 
     def setup_method(self):
-        self.runner = CliRunner()
+        self.runner = CliRunner(env={"DAYFLOW_CONFIG_PATH": ".dayflow/config.yaml"})
 
     def test_config_show(self):
         """Test showing current configuration."""
@@ -82,7 +82,7 @@ class TestConfigCommands:
                 assert "Configuration updated" in result.output
 
                 # Check file was updated
-                assert "/new/vault" in config_file.read_text()
+                assert "/new/vault" in config_file.read_text(encoding="utf-8")
 
     def test_config_reset(self):
         """Test resetting configuration to defaults."""
@@ -102,7 +102,7 @@ class TestConfigCommands:
             assert "Configuration reset to defaults" in result.output
 
             # Check defaults were applied
-            config = yaml.safe_load(config_file.read_text())
+            config = yaml.safe_load(config_file.read_text(encoding="utf-8"))
             assert config["vault"]["path"] == ""  # Default empty path
             assert "custom" not in config["vault"]  # Custom field removed
 
@@ -149,5 +149,5 @@ class TestConfigCommands:
             assert "Configuration updated" in result.output
 
             # Verify change
-            config = yaml.safe_load(config_file.read_text())
+            config = yaml.safe_load(config_file.read_text(encoding="utf-8"))
             assert config["vault"]["path"] == "/new/vault"

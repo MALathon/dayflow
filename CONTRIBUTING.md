@@ -8,7 +8,7 @@ Thank you for your interest in contributing to Dayflow!
 
 1. Fork and clone the repository:
    ```bash
-   git clone https://github.com/malathon/dayflow.git
+   git clone https://github.com/yourusername/dayflow.git
    cd dayflow
    ```
 
@@ -29,20 +29,50 @@ Thank you for your interest in contributing to Dayflow!
    pre-commit install
    ```
 
+5. (Optional) Install `act` for local GitHub Actions testing:
+   ```bash
+   # macOS
+   brew install act
+
+   # Linux
+   curl https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash
+
+   # Windows (using Chocolatey)
+   choco install act-cli
+   ```
+
 ### Running Tests
 
 ```bash
-# Run all tests
+# Quick test run
 make test
 
-# Run specific test files
-pytest tests/test_meeting_matcher.py
+# Run full CI/CD pipeline locally (matches GitHub Actions exactly)
+make test-ci
 
-# Run with coverage
-make test-cov
+# Run all checks (format, lint, type, tests)
+make test-all
 
-# Run only new feature tests
-make test-new
+# Run specific test categories
+make test-unit          # Unit tests only
+make test-integration   # Integration tests
+make test-cli          # CLI tests
+make test-cov          # With coverage report
+
+# Test with GitHub Actions locally using act
+make test-act          # Default: Ubuntu + Python 3.11
+make test-act-windows  # Windows + Python 3.11
+make test-act-macos    # macOS + Python 3.11
+
+# Test all Python versions on a specific OS
+make test-act-all-ubuntu   # Tests Python 3.8-3.12 on Ubuntu
+make test-act-all-windows  # Tests Python 3.8-3.12 on Windows
+make test-act-all-macos    # Tests Python 3.8-3.12 on macOS
+
+# Direct pytest commands
+pytest tests/test_meeting_matcher.py   # Single file
+pytest -m integration                  # Integration tests only
+pytest -v --durations=10              # Verbose with timing
 ```
 
 ## Development Guidelines
@@ -102,6 +132,63 @@ test: add tests for daily summary generator
    - Include test results
 
 ## Testing Guidelines
+
+### Test Organization
+
+```
+tests/
+├── core/              # Core functionality tests
+├── vault/             # Vault management tests
+├── ui/                # CLI interface tests
+└── integration/       # End-to-end tests
+```
+
+### Test Markers
+
+- `@pytest.mark.tdd` - Test-driven development tests (skipped by default)
+- `@pytest.mark.integration` - Integration tests
+- `@pytest.mark.slow` - Long-running tests
+- `@pytest.mark.requires_token` - Tests requiring Microsoft Graph token
+
+### Running Specific Tests
+
+```bash
+# Run a single test file
+pytest tests/core/test_sync_engine.py
+
+# Run a single test method
+pytest tests/core/test_daily_summary.py::TestDailySummary::test_generate_basic_summary
+
+# Run tests matching a pattern
+pytest -k "test_format"
+
+# Include TDD tests
+pytest -m ""
+
+# Debug test failures
+pytest --pdb  # Drop into debugger on failure
+pytest -x     # Stop on first failure
+pytest --lf   # Run last failed tests
+```
+
+### Coverage Requirements
+
+- Minimum coverage: 70%
+- Core modules should have >90% coverage
+- New features must include tests
+
+View coverage report:
+```bash
+make test-cov
+open htmlcov/index.html
+```
+
+### Windows Compatibility
+
+All file operations must:
+- Use `encoding='utf-8'` for text files
+- Handle both `/` and `\` path separators
+- Use `pathlib.Path` for path operations
 
 ### Test Structure
 
@@ -168,6 +255,20 @@ class TestFeatureName:
 - Update README.md for new commands
 - Update ARCHITECTURE.md for new components
 - Add examples to examples/ directory
+
+## Setting up Codecov
+
+To enable code coverage reporting:
+
+1. Sign up at [codecov.io](https://codecov.io) with your GitHub account
+2. Add your repository in Codecov
+3. Copy your upload token
+4. Add it to GitHub Secrets:
+   - Go to Settings > Secrets and variables > Actions
+   - Add secret named `CODECOV_TOKEN`
+   - Paste your upload token
+
+Note: CI is configured to not fail if Codecov upload fails.
 
 ## Release Process
 

@@ -2,6 +2,7 @@
 Test cases for vault configuration management.
 """
 
+import os
 import tempfile
 from pathlib import Path
 from unittest.mock import mock_open, patch
@@ -55,13 +56,22 @@ class TestVaultConfig:
         with tempfile.TemporaryDirectory() as tmpdir:
             home_dir = Path(tmpdir) / "home"
             home_dir.mkdir()
+            work_dir = Path(tmpdir) / "work"
+            work_dir.mkdir()
 
             with patch("pathlib.Path.home", return_value=home_dir):
-                VaultConfig()  # This creates the config file
+                with patch("pathlib.Path.cwd", return_value=work_dir):
+                    # Remove the environment variable completely
+                    env_copy = os.environ.copy()
+                    if "DAYFLOW_CONFIG_PATH" in env_copy:
+                        del env_copy["DAYFLOW_CONFIG_PATH"]
 
-                # Check that config was created
-                expected_path = home_dir / ".dayflow" / "config.yaml"
-                assert expected_path.exists()
+                    with patch.dict("os.environ", env_copy, clear=True):
+                        VaultConfig()  # This creates the config file
+
+                        # Check that config was created
+                        expected_path = home_dir / ".dayflow" / "config.yaml"
+                        assert expected_path.exists()
 
                 # Check content
                 content = yaml.safe_load(expected_path.read_text(encoding="utf-8"))

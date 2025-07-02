@@ -20,27 +20,38 @@ pre-commit install
 
 ### Testing
 ```bash
-# Run all tests (excludes TDD tests by default)
-pytest
+# Quick test run (excludes TDD tests)
+make test
 
-# Run specific test file or directory
-pytest tests/core/test_sync_engine.py
-pytest tests/vault/
+# Run full CI/CD checks locally (exactly matches GitHub Actions)
+make test-ci
 
-# Run a single test
-pytest tests/core/test_daily_summary.py::TestDailySummary::test_generate_basic_summary
+# Run all checks: format, lint, type, and tests
+make test-all
 
-# Run with coverage report
-pytest --cov=dayflow --cov-report=html
+# Run specific test categories
+make test-unit          # Unit tests (core + vault)
+make test-integration   # Integration tests
+make test-cli          # CLI tests
+make test-cov          # With coverage report
 
-# Run tests including TDD (Test-Driven Development) tests
-pytest -m ""
+# Test with GitHub Actions locally using act
+make test-act          # Ubuntu + Python 3.11
+make test-act-windows  # Windows + Python 3.11
+make test-act-macos    # macOS + Python 3.11
 
-# Run only integration tests
-pytest -m integration
+# Run tests for all Python versions on specific OS
+make test-act-all-ubuntu   # All Python versions on Ubuntu
+make test-act-all-windows  # All Python versions on Windows
+make test-act-all-macos    # All Python versions on macOS
 
-# Run tests with verbose output and timing
-pytest -v --durations=10
+# Direct pytest commands (if needed)
+pytest -m "not tdd"                    # Exclude TDD tests
+pytest -m ""                           # Include TDD tests
+pytest -m integration                  # Only integration tests
+pytest -v --durations=10               # Verbose with timing
+pytest tests/core/test_sync_engine.py  # Single file
+pytest tests/core/test_daily_summary.py::TestDailySummary::test_generate_basic_summary  # Single test
 ```
 
 ### Code Quality

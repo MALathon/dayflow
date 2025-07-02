@@ -25,14 +25,14 @@ An intelligent calendar workflow system that synchronizes Microsoft 365 calendar
 
 - Python 3.8+
 - Obsidian vault
-- Microsoft 365 account (works with Mayo Clinic and other enterprise environments)
+- Microsoft 365 account (works with enterprise environments where admin access is difficult to obtain or unwanted)
 
 ### Installation
 
 ```bash
 # Clone the repository
 git clone https://github.com/malathon/dayflow.git
-cd obsidian_workflow
+cd dayflow
 
 # Install the package
 pip install -e .
@@ -76,7 +76,15 @@ This will:
 - Maintain a "Current Meeting.md" shortcut in your vault root
 - Highlight current meetings in daily summaries
 
-## Commands
+## Documentation
+
+- [User Guide](docs/user-guide.md) - Complete usage instructions
+- [Architecture](docs/ARCHITECTURE.md) - Technical architecture overview
+- [Contributing](CONTRIBUTING.md) - Development setup and guidelines
+- [Roadmap](ROADMAP.md) - Future features and development plans
+- [Examples](docs/examples/) - Code examples and integration guides
+
+## Quick Command Reference
 
 ### Authentication
 - `dayflow auth login` - Authenticate with Microsoft Graph
@@ -154,23 +162,37 @@ The system consists of three main components:
 2. **Vault**: Manages Obsidian vault configuration and file operations
 3. **UI**: Provides the command-line interface
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed technical information.
+See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed technical information.
 
 ## Development
 
 ### Running Tests
 
 ```bash
-# Run all tests
-pytest
+# Quick test run (excludes TDD tests)
+make test
+
+# Run full CI/CD checks locally (exactly as GitHub Actions)
+make test-ci
+
+# Run all checks: format, lint, type, and tests
+make test-all
+
+# Test with GitHub Actions locally using act
+make test-act           # Ubuntu + Python 3.11
+make test-act-windows   # Windows + Python 3.11
+make test-act-macos     # macOS + Python 3.11
 
 # Run specific test categories
-pytest tests/test_daily_summary.py
-pytest tests/test_meeting_matcher.py
+make test-unit          # Unit tests only
+make test-integration   # Integration tests
+make test-cli          # CLI tests
 
 # Run with coverage
-pytest --cov=dayflow
+make test-cov
 ```
+
+See `make help` for all available commands.
 
 ### Project Structure
 
@@ -181,7 +203,7 @@ dayflow/
 └── ui/             # CLI interface
 
 tests/              # Comprehensive test suite
-examples/           # Usage examples
+docs/               # Documentation and examples
 ```
 
 ## Limitations

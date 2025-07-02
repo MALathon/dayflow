@@ -3,21 +3,36 @@ Test cases for vault-related CLI commands.
 """
 
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
+import pytest
 import yaml  # type: ignore
 from click.testing import CliRunner
 
 from dayflow.ui.cli import cli
 
 
+@pytest.fixture(autouse=True)
+def mock_vault_detector():
+    """Mock VaultDetector to speed up tests."""
+    with patch("dayflow.vault.detector.VaultDetector") as mock_detector_class:
+        mock_instance = Mock()
+        mock_detector_class.return_value = mock_instance
+
+        # Default to finding no vaults unless overridden
+        mock_instance.find_obsidian_vaults.return_value = []
+        mock_instance.get_vault_stats.return_value = {"total_notes": 0}
+
+        yield mock_instance
+
+
 class TestVaultCommands:
     """Test vault management commands."""
 
     def setup_method(self):
-        self.runner = CliRunner()
+        self.runner = CliRunner(env={"DAYFLOW_CONFIG_PATH": ".dayflow/config.yaml"})
 
-    def test_vault_init_interactive(self):
+    def test_vault_init_interactive(self, mock_vault_detector):
         """Test interactive vault initialization."""
         with self.runner.isolated_filesystem():
             # Create a mock vault
@@ -25,23 +40,35 @@ class TestVaultCommands:
             vault_path.mkdir()
             (vault_path / ".obsidian").mkdir()
 
+            # Mock finding only the test vault
+            mock_vault_detector.find_obsidian_vaults.return_value = [vault_path]
+
             # Mock user inputs
             with patch("click.prompt") as mock_prompt:
                 with patch("click.confirm") as mock_confirm:
                     mock_prompt.side_effect = [
-                        str(vault_path),
-                        "1",
-                    ]  # path, then template choice
+                        1,  # Select vault 1 (test_vault) from the list
+                        1,  # Calendar events location - option 1
+                        1,  # Daily notes location - option 1
+                    ]
                     mock_confirm.return_value = True
 
                     result = self.runner.invoke(cli, ["vault", "init"])
 
-                    assert result.exit_code == 0
-                    assert "Vault initialization complete" in result.output
+                    if result.exit_code != 0:
+                        print(f"Exit code: {result.exit_code}")
+                        print(f"Output: {result.output}")
+                        print(f"Exception: {result.exception}")
+                        if result.exception:
+                            import traceback
 
-                    # Check config was created
-                    config_file = Path.home() / ".dayflow" / "config.yaml"
-                    # In isolated filesystem, config would be in current dir
+                            traceback.print_tb(result.exc_info[2])
+
+                    assert result.exit_code == 0
+                    assert "✅ Configuration saved to:" in result.output
+                    assert "Your vault is now configured!" in result.output
+
+                    # Check config was created in current dir due to env var
                     config_file = Path(".dayflow/config.yaml")
                     assert config_file.exists()
 
@@ -79,7 +106,7 @@ class TestVaultCommands:
             assert "Vault path updated" in result.output
 
             # Check config was updated
-            config = yaml.safe_load(config_file.read_text())
+            config = yaml.safe_load(config_file.read_text(encoding="utf-8"))
             assert config["vault"]["path"] == str(new_vault)
 
     def test_vault_set_location(self):
@@ -101,7 +128,7 @@ class TestVaultCommands:
             assert "Location updated" in result.output
 
             # Check config
-            config = yaml.safe_load(config_file.read_text())
+            config = yaml.safe_load(config_file.read_text(encoding="utf-8"))
             assert config["vault"]["locations"]["calendar_events"] == "Meetings/Work"
 
     def test_vault_list_templates(self):
@@ -130,7 +157,7 @@ class TestVaultCommands:
             assert "Applied GTD template" in result.output
 
             # Check locations were added
-            config = yaml.safe_load(config_file.read_text())
+            config = yaml.safe_load(config_file.read_text(encoding="utf-8"))
             assert "gtd_inbox" in config["vault"]["locations"]
             assert config["vault"]["locations"]["gtd_inbox"] == "00-Inbox"
 
@@ -154,7 +181,7 @@ class TestVaultCommands:
                     },
                 }
             }
-            config_file.write_text(yaml.dump(config_data))
+            config_file.write_text(yaml.dump(config_data), encoding="utf-8")
 
             result = self.runner.invoke(cli, ["vault", "status"])
 
@@ -175,12 +202,12 @@ class TestVaultCommands:
             config_dir = Path(".dayflow")
             config_dir.mkdir()
             config_file = config_dir / "config.yaml"
-            config_file.write_text(f"vault:\n  path: {vault_path}")
+            config_file.write_text(f"vault:\n  path: {vault_path}", encoding="utf-8")
 
             result = self.runner.invoke(cli, ["vault", "validate"])
 
             assert result.exit_code == 0
-            assert "✓ Vault configuration is valid" in result.output
+            assert "✅ Vault configuration is valid" in result.output
 
     def test_vault_validate_missing_path(self):
         """Test validation with missing vault path."""
@@ -188,7 +215,9 @@ class TestVaultCommands:
             config_dir = Path(".dayflow")
             config_dir.mkdir()
             config_file = config_dir / "config.yaml"
-            config_file.write_text("vault:\n  path: /nonexistent/path")
+            config_file.write_text(
+                "vault:\n  path: /nonexistent/path", encoding="utf-8"
+            )
 
             result = self.runner.invoke(cli, ["vault", "validate"])
 
@@ -207,7 +236,12 @@ class TestVaultCommands:
             vault2.mkdir(parents=True)
             (vault2 / ".obsidian").mkdir()
 
-            with patch("pathlib.Path.home", return_value=Path.cwd()):
+            # Mock the detector at the vault module level
+            with patch("dayflow.vault.VaultDetector") as mock_detector_class:
+                mock_instance = Mock()
+                mock_detector_class.return_value = mock_instance
+                mock_instance.find_obsidian_vaults.return_value = [vault1, vault2]
+
                 result = self.runner.invoke(cli, ["vault", "detect"])
 
                 assert result.exit_code == 0

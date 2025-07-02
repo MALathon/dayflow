@@ -51,7 +51,11 @@ class CurrentMeetingManager:
         if not active_meetings:
             return None
 
-        # If multiple meetings, return the most recently started
+        # If multiple meetings, prioritize non-all-day events
+        # and then return the most recently started
+        non_all_day = [e for e in active_meetings if not e.get("is_all_day", False)]
+        if non_all_day:
+            return max(non_all_day, key=lambda e: e["start_time"])
         return max(active_meetings, key=lambda e: e["start_time"])
 
     def get_next_meeting(

@@ -4,15 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dayflow"
-version = "0.1.0"
+version = "0.1.1"
 description = "Intelligent calendar workflow system for Obsidian notes"
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [
-    {name = "Mark Lifson", email = "mark.lifson@example.com"},
+    {name = "Mark Lifson", email = "mlifson@gmail.com"},
 ]
 maintainers = [
-    {name = "Mark Lifson", email = "mark.lifson@example.com"},
+    {name = "Mark Lifson", email = "mlifson@@gmail.com"},
 ]
 requires-python = ">=3.8"
 keywords = ["obsidian", "calendar", "microsoft", "sync", "productivity"]
@@ -98,6 +98,14 @@ addopts = [
     "--cov=dayflow",
     "--cov-branch",
     "--cov-report=term-missing:skip-covered",
+    # Skip TDD tests by default
+    "-m", "not tdd",
+]
+markers = [
+    "integration: Integration tests that require full system setup",
+    "tdd: Test-Driven Development tests for unimplemented features",
+    "slow: Tests that take a long time to run",
+    "requires_token: Tests that require a valid Microsoft Graph token",
 ]
 
 [tool.coverage.run]

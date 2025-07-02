@@ -339,49 +339,12 @@ class VaultSetupWizard:
         click.echo(f"\n✅ Configuration saved to: {self.config.config_path}")
 
     def _offer_test(self):
-        """Offer to create a test file."""
-        click.echo("\n🧪 Step 6: Test setup")
+        """Offer to verify the setup."""
+        click.echo("\n🧪 Step 6: Verify setup")
         click.echo("-" * 40)
 
-        if "calendar_events" in self.locations:
-            if click.confirm("\nWould you like to create a test calendar event?"):
-                from datetime import datetime
-
-                test_content = """---
-date: {datetime.now().strftime('%Y-%m-%d')}
-type: meeting
-tags: [calendar-sync, test]
----
-
-# Test Calendar Event
-
-This is a test event created by Dayflow.
-
-## Details
-- **Created**: {datetime.now().strftime('%Y-%m-%d %H:%M')}
-- **Location**: {self.locations['calendar_events']}
-
-## Notes
-If you can see this file in Obsidian, your setup is working correctly! 🎉
-"""
-
-                filename = (
-                    f"{datetime.now().strftime('%Y-%m-%d')} Test Calendar Event.md"
-                )
-                file_path = (
-                    self.vault_path / self.locations["calendar_events"] / filename
-                )
-                file_path.write_text(test_content, encoding="utf-8")
-
-                click.echo(f"\n✅ Created test file: {filename}")
-                click.echo(f"   Location: {file_path}")
-
-                if click.confirm("\nOpen in Obsidian?"):
-                    import webbrowser
-
-                    vault_name = self.vault_path.name
-                    file_rel_path = file_path.relative_to(self.vault_path)
-                    obsidian_url = (
-                        f"obsidian://open?vault={vault_name}&file={file_rel_path}"
-                    )
-                    webbrowser.open(obsidian_url)
+        click.echo("\nYour vault is now configured!")
+        click.echo("\nTo verify the setup is working:")
+        click.echo("1. Run: dayflow sync")
+        click.echo("2. Check your vault for synchronized calendar events")
+        click.echo("\nNote: You'll need to authenticate first with: dayflow auth login")

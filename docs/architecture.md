@@ -1,183 +1,153 @@
-# Dayflow - Architecture
+# Dayflow Architecture
 
 ## Overview
 
-The system synchronizes Microsoft 365 calendar events to an Obsidian vault, providing intelligent meeting detection and note management capabilities.
+Dayflow is a modular calendar workflow system designed to bridge Microsoft 365 calendar with Obsidian vaults. The architecture prioritizes flexibility, extensibility, and clean separation of concerns.
 
 ## Core Components
 
-### 1. Graph API Client (`core/graph_client.py`)
+### 1. Core Module (`dayflow.core`)
 
-Handles Microsoft Graph API communication:
-- Fetches calendar events with pagination support
-- Normalizes event data structure
-- Handles authentication errors and rate limiting
+The core module handles all calendar and note processing logic:
 
-```python
-client = GraphAPIClient(access_token)
-events = client.fetch_calendar_events(start_date, end_date)
-```
+#### CalendarSyncEngine (`sync.py`)
+- Central orchestrator for calendar synchronization
+- Fetches events from Microsoft Graph API
+- Coordinates note creation and daily summaries
+- Integrates folder organization and current meeting tracking
 
-### 2. Calendar Sync Engine (`core/sync.py`)
+#### GraphAPIClient (`graph_client.py`)
+- Interfaces with Microsoft Graph API
+- Handles authentication and API calls
+- Normalizes event data into consistent format
 
-Orchestrates the synchronization process:
-- Manages sync workflow
-- Creates/updates meeting notes
-- Generates daily summaries
-- Tracks sync statistics
+#### ObsidianNoteFormatter (`obsidian_formatter.py`)
+- Converts calendar events to Obsidian-compatible markdown
+- Generates YAML frontmatter with event metadata
+- Supports time-prefixed filenames for folder organization
 
-```python
-engine = CalendarSyncEngine(access_token, vault_connection)
-result = engine.sync(start_date, end_date)
-```
-
-### 3. Meeting Matcher (`core/meeting_matcher.py`)
-
-Intelligent meeting detection based on time:
-- Finds current meeting (happening now)
-- Detects upcoming meetings (within 15 minutes)
-- Identifies recent meetings (within 30 minutes)
-- Parses meeting notes for time information
-
-```python
-matcher = MeetingMatcher(vault_path)
-current = matcher.find_current_meeting(meeting_notes_path)
-```
-
-### 4. Daily Summary Generator (`core/daily_summary.py`)
-
-Creates comprehensive daily overview notes:
-- Groups meetings by time of day
+#### DailySummaryGenerator (`daily_summary.py`)
+- Creates daily overview notes
 - Links to individual meeting notes
-- Creates action item summaries
-- Provides daily reflection sections
+- Highlights current meetings with special indicators
 
-### 5. Obsidian Note Formatter (`core/obsidian_formatter.py`)
+#### CurrentMeetingManager (`current_meeting.py`)
+- Identifies currently active meetings
+- Maintains "Current Meeting.md" shortcut in vault root
+- Provides meeting status (past, current, soon, future)
 
-Formats calendar events as Obsidian notes:
-- YAML frontmatter with metadata
-- Markdown formatting
-- Wiki links for attendees
-- Action item templates
+### 2. Vault Module (`dayflow.vault`)
 
-## Vault Management
+Manages Obsidian vault configuration and file operations:
 
-### Vault Configuration (`vault/config.py`)
+#### VaultConnection (`connection.py`)
+- Abstracts file system operations
+- Handles note reading/writing
+- Implements folder organization logic
+- Supports multiple vault structures
 
-Manages vault settings and folder structures:
-- Supports multiple organization templates (PARA, GTD, time-based)
-- Validates vault accessibility
-- Provides location mapping
+#### VaultConfig (`config.py`)
+- Manages configuration file (~/.dayflow/config.yaml)
+- Provides settings access with dot notation
+- Supports vault location mappings
 
-### Vault Connection (`vault/connection.py`)
+#### Structure Detector (`detector.py`)
+- Analyzes existing vault structure
+- Detects PARA, GTD, or time-based organization
+- Suggests appropriate folder mappings
 
-Handles file operations:
-- Creates folders as needed
-- Writes notes with proper paths
-- Checks for existing notes
+### 3. UI Module (`dayflow.ui`)
 
-### Vault Detector (`vault/detector.py`)
+Command-line interface implementation:
 
-Automatically finds Obsidian vaults:
-- Searches common locations
-- Validates .obsidian folder presence
-
-### Setup Wizard (`vault/setup_wizard.py`)
-
-Interactive configuration:
-- Guides through vault selection
-- Maps folder structures
-- Tests write permissions
-
-## CLI Interface (`ui/cli.py`)
-
-Command-line interface using Click:
-- Modular command groups (auth, sync, vault, config)
-- Interactive prompts and confirmations
-- Rich output formatting
-- Error handling and user guidance
+#### CLI (`cli.py`)
+- Click-based command structure
+- Commands for auth, sync, note creation, vault management
+- Rich terminal output with progress indicators
 
 ## Data Flow
 
 ```
-1. User Authentication
-   └── Manual token from Graph Explorer
-       └── Stored in .graph_token
-
-2. Calendar Sync
-   ├── Fetch events from Graph API
-   ├── Filter active events
-   ├── Format as Obsidian notes
-   ├── Write to vault folders
-   └── Generate daily summaries
-
-3. Quick Note Creation
-   ├── Detect current meeting context
-   ├── Apply note template
-   ├── Link to meeting if applicable
-   └── Save to appropriate folder
+Microsoft Graph API
+        ↓
+GraphAPIClient
+        ↓
+CalendarSyncEngine
+        ↓
+    ┌───┴───┐
+    ↓       ↓
+ObsidianNoteFormatter  DailySummaryGenerator
+    ↓       ↓
+VaultConnection ← CurrentMeetingManager
+    ↓
+Obsidian Vault
 ```
 
-## Authentication Design
+## Key Design Decisions
 
-Due to Mayo Clinic security restrictions, we use a manual token workflow:
+### 1. Folder Organization
 
-1. User opens Microsoft Graph Explorer
-2. Signs in with enterprise credentials
-3. Runs a test query to generate token
-4. Copies token from the UI
-5. CLI reads from clipboard and stores
+The system supports multiple organization patterns:
+- **Flat Structure**: All notes in single folder with date prefixes
+- **Date Hierarchy**: Year/month/day folders with time-prefixed files
+- **Weekly Organization**: Year/week folders
+- **Monthly Organization**: Year/month folders
 
-This approach works around:
-- Azure CLI blocking
-- MSAL device code flow restrictions
-- Corporate proxy requirements
+This is configured via `calendar.folder_organization` setting.
 
-## File Structure Patterns
+### 2. Current Meeting Tracking
 
-### Meeting Notes
-```
-Calendar Events/
-├── 2024-01-15 Team Standup.md
-├── 2024-01-15 Budget Review.md
-└── 2024-01-16 Project Planning.md
-```
+The CurrentMeetingManager maintains a live link to the active meeting:
+- Checks event start/end times against current time
+- Updates "Current Meeting.md" shortcut during sync
+- Integrates with daily summaries for visual indicators
 
-### Daily Summaries
-```
-Daily Notes/
-├── 2024-01-15 Daily Summary.md
-└── 2024-01-16 Daily Summary.md
-```
+### 3. Token Management
 
-### Note Metadata (Frontmatter)
-```yaml
----
-title: Team Standup
-date: 2024-01-15
-start_time: 2024-01-15T09:00:00
-end_time: 2024-01-15T09:30:00
-type: meeting
-location: Conference Room A
-attendees: [John Doe, Jane Smith]
-tags: [calendar-event, team-standup]
----
-```
+Due to Microsoft Graph Explorer limitations:
+- Tokens must be manually obtained
+- Tokens expire after ~1 hour
+- Future versions will implement OAuth flow
 
-## Extension Points
+### 4. Extensibility Points
 
-The architecture supports extensions through:
-
-1. **Custom Formatters**: Subclass `ObsidianNoteFormatter`
-2. **Additional Sync Sources**: Implement sync engine interface
-3. **Vault Templates**: Add new organization structures
-4. **CLI Commands**: Add new command groups
+The architecture provides several extension points:
+- Custom vault structures via templates
+- Additional note processors (GTD, Zettelkasten)
+- Alternative calendar sources
+- Plugin system for note templates
 
 ## Testing Strategy
 
-- **Unit Tests**: Core components in isolation
-- **Integration Tests**: Vault operations
-- **CLI Tests**: Command behavior and user interaction
-- **Mock Strategy**: Graph API and file system operations
+### Unit Tests
+- Individual component testing
+- Mocked dependencies
+- Edge case coverage
 
-Total test coverage: 172 tests across all components.
+### Integration Tests
+- End-to-end sync workflow
+- Vault structure validation
+- Current meeting identification
+
+### Test-Driven Development
+All features follow TDD methodology:
+1. Write failing tests
+2. Implement minimal code to pass
+3. Refactor for clarity
+
+## Future Architecture Considerations
+
+### Continuous Sync
+- Background service architecture
+- Token refresh mechanism
+- Event-driven updates
+
+### Multi-Vault Support
+- Vault profiles
+- Per-vault configurations
+- Cross-vault linking
+
+### Plugin System
+- Template marketplace
+- Custom processors
+- Third-party integrations

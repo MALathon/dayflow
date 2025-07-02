@@ -81,6 +81,12 @@ class VaultConfig:
 
     def _find_config(self) -> Path:
         """Find configuration file in standard locations."""
+        import os
+
+        # Check for environment variable override (useful for testing)
+        if env_config := os.environ.get("DAYFLOW_CONFIG_PATH"):
+            return Path(env_config)
+
         # Check home directory first
         home_config = Path.home() / ".dayflow" / "config.yaml"
         if home_config.exists():
@@ -97,12 +103,12 @@ class VaultConfig:
     def _create_default_config(self):
         """Create default configuration file."""
         self.config_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(self.config_path, "w") as f:
+        with open(self.config_path, "w", encoding="utf-8") as f:
             yaml.dump(self.DEFAULT_CONFIG, f, default_flow_style=False)
 
     def _load_config(self) -> Dict[str, Any]:
         """Load configuration from file."""
-        with open(self.config_path, "r") as f:
+        with open(self.config_path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f) or {}
 
     @property
@@ -157,7 +163,7 @@ class VaultConfig:
 
     def _save_config(self):
         """Save configuration to file."""
-        with open(self.config_path, "w") as f:
+        with open(self.config_path, "w", encoding="utf-8") as f:
             yaml.dump(self.config, f, default_flow_style=False)
 
     def get_template(self, template_name: str) -> Dict[str, Any]:

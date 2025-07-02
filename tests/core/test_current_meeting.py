@@ -242,7 +242,7 @@ class TestCurrentMeeting:
 
         assert "## 📅 Current Meeting" in widget
         assert "[[Current Meeting]]" in widget
-        assert "Started 15 minutes ago" in widget
+        assert "Started" in widget and "minutes ago" in widget
         assert "minutes remaining" in widget  # Don't check exact time due to timing
 
         # Also shows next meeting

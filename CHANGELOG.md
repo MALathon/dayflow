@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.2.0] - 2025-01-15
+## [0.1.1] - 2025-01-02
 
 ### Added
 - Date-based folder organization for calendar events
@@ -11,15 +11,28 @@ All notable changes to this project will be documented in this file.
 - Live "Current Meeting.md" shortcut in vault root
 - Visual indicators for current meetings in daily summaries
 - Configurable folder patterns (year/month/day, year/week, year/month)
+- Local GitHub Actions testing with `act`
+- Comprehensive testing documentation
+
+### Changed
+- Repository structure cleaned up to professional standards
+- Documentation reorganized and consolidated
+- Removed test file creation from vault setup wizard
+- Improved Windows compatibility with UTF-8 encoding throughout
 
 ### Enhanced
 - Daily summaries now highlight current meetings with "⏰ **NOW**" indicator
 - ObsidianNoteFormatter supports both flat and hierarchical file organization
 - VaultConnection handles dynamic folder creation based on event dates
+- Current meeting detection prioritizes non-all-day events
+- Test suite performance improvements with proper mocking
 
 ### Fixed
 - Attendee names showing as "Unknown" in daily summaries
 - Proper handling of Microsoft Graph API attendee structure
+- Test isolation issues in config commands
+- Current meeting selection logic for all-day vs regular events
+- Windows path compatibility in tests
 
 ## [0.1.0] - 2024-01-16
 

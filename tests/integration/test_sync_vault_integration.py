@@ -28,7 +28,10 @@ class TestSyncVaultIntegration:
         """Create a mock config with temp vault."""
         config = Mock(spec=VaultConfig)
         config.vault_path = Path(temp_vault)
-        config.get_location.return_value = Path(temp_vault) / "Calendar Events"
+        config.get_location.side_effect = lambda location_type: {
+            "calendar_events": Path(temp_vault) / "Calendar Events",
+            "daily_notes": Path(temp_vault) / "Daily Notes",
+        }.get(location_type, Path(temp_vault) / location_type)
         config.get_setting = Mock(return_value=None)  # No folder organization
         return config
 
@@ -73,8 +76,7 @@ class TestSyncVaultIntegration:
         mock_client_instance.fetch_calendar_events.return_value = mock_graph_events
 
         # Create sync engine with vault connection
-        engine = CalendarSyncEngine("fake_token")
-        engine.vault_connection = vault_connection
+        engine = CalendarSyncEngine("fake_token", vault_connection=vault_connection)
 
         # Perform sync
         result = engine.sync()
@@ -115,8 +117,7 @@ class TestSyncVaultIntegration:
         mock_client_instance.fetch_calendar_events.return_value = mock_graph_events
 
         # Create sync engine with vault connection
-        engine = CalendarSyncEngine("fake_token")
-        engine.vault_connection = vault_connection
+        engine = CalendarSyncEngine("fake_token", vault_connection=vault_connection)
 
         # Perform sync
         result = engine.sync()
@@ -149,8 +150,7 @@ class TestSyncVaultIntegration:
         mock_client_instance.fetch_calendar_events.return_value = events
 
         # Create sync engine with vault connection
-        engine = CalendarSyncEngine("fake_token")
-        engine.vault_connection = vault_connection
+        engine = CalendarSyncEngine("fake_token", vault_connection=vault_connection)
 
         # Perform sync - should filter out cancelled events
         result = engine.sync()
@@ -168,8 +168,7 @@ class TestSyncVaultIntegration:
         mock_client_instance.fetch_calendar_events.return_value = mock_graph_events
 
         # Create sync engine with vault connection
-        engine = CalendarSyncEngine("fake_token")
-        engine.vault_connection = vault_connection
+        engine = CalendarSyncEngine("fake_token", vault_connection=vault_connection)
 
         # Sync with specific dates
         start = date(2024, 1, 15)
@@ -190,8 +189,7 @@ class TestSyncVaultIntegration:
         )
 
         # Create sync engine with vault connection
-        engine = CalendarSyncEngine("fake_token")
-        engine.vault_connection = vault_connection
+        engine = CalendarSyncEngine("fake_token", vault_connection=vault_connection)
 
         # Sync should raise the exception
         with pytest.raises(Exception, match="Network error"):

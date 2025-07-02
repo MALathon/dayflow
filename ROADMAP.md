@@ -1,116 +1,261 @@
-# Dayflow Roadmap
+# Roadmap
 
-## Overview
+## Current Status (v0.1.0)
 
-This document outlines the planned features and improvements for Dayflow, organized by release milestones.
+### ✅ Implemented Features
 
-## Version 0.3.0 - Enhanced Sync & Token Management
+#### Authentication & Calendar Sync
+- Manual token authentication via Microsoft Graph Explorer
+- Token storage and validation
+- Basic sync command with date range support
+- Graph API client for fetching calendar events
+- Sync engine with event filtering
+- Support for custom date ranges
 
-### Goals
-- Provide continuous-sync-like functionality within enterprise constraints
-- Improve manual token workflow with better UX
-- Enable background synchronization without webhooks
+#### Vault Management
+- Vault configuration system with YAML storage
+- Vault detector for finding Obsidian vaults
+- Vault structure templates (PARA, GTD, time-based, Zettelkasten, custom)
+- Interactive setup wizard
+- Vault validation
+- Folder organization support (year/month/day, year/week, year/month)
+- Time-prefixed note naming (HHMM format)
 
-### Features
-- [ ] Enhanced Manual Token Management
-  - [ ] Token expiry monitoring with proactive warnings
-  - [ ] Token refresh reminders (configurable alerts)
-  - [ ] Multiple token storage (work/personal accounts)
-  - [ ] Token validation on startup with clear error messages
-- [ ] Pseudo-Continuous Sync
-  - [ ] Scheduled sync setup guides (cron/Task Scheduler)
-  - [ ] File watcher for manual sync triggers
-  - [ ] Incremental sync to minimize API calls
-  - [ ] Smart sync intervals based on calendar patterns
-- [ ] Background Sync Service (Local)
-  - [ ] Local daemon for periodic syncs
-  - [ ] System tray application for sync status
-  - [ ] Offline change queue for later sync
-  - [ ] Conflict detection and resolution
-- [ ] Sync Status Indicators
-  - [ ] `.sync_status` file tracking in vault
-  - [ ] Status badges in daily notes
-  - [ ] Comprehensive sync history log
-  - [ ] Error tracking with actionable messages
+#### Note Creation
+- Obsidian note formatter with frontmatter
+- Calendar event notes with proper metadata
+- Daily summary notes with current meeting highlighting
+- Quick note command with automatic meeting context detection
+- Note templates (meeting, idea, task, reference)
+- HTML to Markdown conversion for meeting descriptions
+- Current meeting tracking and management
 
-## Version 0.4.0 - GTD Integration
+#### GTD System
+- GTD inbox management
+- Process inbox items (basic interactive mode)
+- Weekly review generator
 
-### Goals
-- Full Getting Things Done workflow implementation
-- Seamless integration with calendar events
+#### Zettelkasten
+- Create permanent, literature, and fleeting notes
+- Unique ID generation
+- Literature note processing
+- Note search functionality
+- Suggestions for permanent notes
 
-### Features
-- [ ] Complete GTD commands (inbox, process, review)
-- [ ] Project and context management
-- [ ] Weekly review automation
-- [ ] Action item extraction from meetings
-- [ ] Natural language task parsing
+#### Configuration & Commands
+- Config show/edit/reset commands
+- Get/set specific config values
+- YAML-based configuration
+- Status command showing system health
+- Version command
+- Help system
 
-## Version 0.5.0 - Zettelkasten Features
+#### Test Coverage
+- **Total Tests**: 249 passing
+- **Code Coverage**: 75% overall
+- **Core Modules**: High coverage (>90% for most)
+- **Windows Compatibility**: Full UTF-8 encoding support
 
-### Goals
-- Implement Zettelkasten note-taking methodology
-- Smart note connections and discovery
+### 🚧 Current Limitations
+- Manual token refresh required (~24 hour expiry)
+- Read-only calendar access
+- No continuous sync (command exists but not implemented)
+- Limited to personal calendar
+- No automated OAuth flow (manual token entry only)
+- No background sync service
+- No conflict resolution
+- No dry-run mode for sync
+- No progress indicators for long operations
 
-### Features
-- [ ] Literature note processing
-- [ ] Permanent note creation workflow
-- [ ] Automatic backlink suggestions
-- [ ] Note clustering and visualization
-- [ ] Citation management
+### 💡 Quick Start
 
-## Version 0.6.0 - Team Collaboration
+```bash
+# Initial setup
+dayflow vault setup        # Interactive vault configuration
+dayflow auth login         # Manual token authentication
 
-### Goals
-- Enable team-wide calendar sync
-- Shared meeting notes and action items
+# Daily usage
+dayflow sync               # Sync today's events
+dayflow sync --start 2024-01-01 --end 2024-01-07  # Sync date range
+dayflow note -t "Meeting notes"  # Create quick note with meeting context
 
-### Features
-- [ ] Multi-user support
-- [ ] Shared vault configurations
-- [ ] Meeting note templates per team
-- [ ] Action item assignment and tracking
-- [ ] Team analytics dashboard
+# GTD workflow
+dayflow gtd inbox --add "Call Bob about project"
+dayflow gtd process        # Process inbox items
+dayflow gtd review --generate  # Create weekly review
 
-## Version 1.0.0 - Enterprise Ready
+# Zettelkasten
+dayflow zettel new -t "Key insight about X"
+dayflow zettel literature -t "Notes on Article" -s "Article Title" -a "Author"
+dayflow zettel suggest     # Find unprocessed literature notes
+```
 
-### Goals
-- Production-ready for enterprise deployment
-- Full security and compliance features
+## Phase 2: Enhanced Sync (v0.2.0)
 
-### Features
-- [ ] SSO integration
-- [ ] Audit logging
-- [ ] Data encryption at rest
-- [ ] Compliance reporting (HIPAA, SOC2)
-- [ ] Advanced configuration management
-- [ ] Plugin system for extensions
+### Automatic Token Management
+- [ ] Implement token refresh mechanism
+- [ ] Store refresh tokens securely
+- [ ] Background token renewal
+- [ ] Token expiry notifications
 
-## Future Considerations
+### Continuous Sync
+- [ ] Implement sync daemon/service
+- [ ] Configurable sync intervals
+- [ ] Change detection to avoid duplicates
+- [ ] System tray integration (optional)
 
-### AI Integration
-- Meeting transcription and summarization
-- Intelligent action item extraction
-- Smart scheduling suggestions
-- Natural language vault queries
+### Sync Improvements
+- [ ] Incremental sync (only changes)
+- [ ] Conflict resolution
+- [ ] Sync status reporting
+- [ ] Multiple calendar support
 
-### Platform Expansion
-- Mobile app companion
-- Web interface for quick access
-- Browser extension for meeting context
-- IDE plugins for developer workflows
+## Phase 3: Enhanced Sync & Token Management (v0.3.0)
 
-### Advanced Analytics
-- Meeting time analytics
-- Productivity insights
-- Team collaboration patterns
-- Personal knowledge graph visualization
+### Enhanced Manual Token Management
+- [ ] Token expiry monitoring with proactive warnings
+- [ ] Token refresh reminders (configurable alerts)
+- [ ] Multiple token storage (work/personal accounts)
+- [ ] Token validation on startup with clear error messages
+
+### Pseudo-Continuous Sync
+- [ ] Scheduled sync setup guides (cron/Task Scheduler)
+- [ ] File watcher for manual sync triggers
+- [ ] Incremental sync to minimize API calls
+- [ ] Smart sync intervals based on calendar patterns
+
+### Background Sync Service (Local)
+- [ ] Local daemon for periodic syncs
+- [ ] System tray application for sync status
+- [ ] Offline change queue for later sync
+- [ ] Conflict detection and resolution
+
+### Sync Status Indicators
+- [ ] `.sync_status` file tracking in vault
+- [ ] Status badges in daily notes
+- [ ] Comprehensive sync history log
+- [ ] Error tracking with actionable messages
+
+## Phase 4: GTD Integration (v0.4.0)
+
+### Task Extraction
+- [ ] Extract action items from meeting notes
+- [ ] Create GTD inbox entries
+- [ ] Parse due dates and contexts
+- [ ] Link tasks to source meetings
+
+### GTD Workflow Commands
+- [ ] Complete `dayflow gtd process` implementation
+- [ ] `dayflow gtd review` - Weekly review helper
+- [ ] Project/task tracking
+- [ ] Waiting-for automation
+
+## Phase 4: Intelligence Features (v0.4.0)
+
+### Meeting Intelligence
+- [ ] Meeting preparation notes
+- [ ] Agenda parsing
+- [ ] Follow-up detection
+- [ ] Meeting series handling
+
+### Smart Suggestions
+- [ ] Related notes discovery
+- [ ] Participant history
+- [ ] Topic clustering
+- [ ] Meeting insights
+
+## Phase 5: Collaboration (v0.5.0)
+
+### Team Features
+- [ ] Shared calendar support
+- [ ] Team member note linking
+- [ ] Collaborative summaries
+- [ ] Permission management
+
+### Integration
+- [ ] Microsoft Teams integration
+- [ ] Email thread linking
+- [ ] Document attachment handling
+- [ ] OneNote migration tools
+
+## Phase 6: Advanced Features (v1.0.0)
+
+### Voice & AI
+- [ ] Meeting transcription
+- [ ] Voice note capture
+- [ ] AI-powered summaries
+- [ ] Smart action extraction
+
+### Analytics
+- [ ] Meeting time analytics
+- [ ] Productivity insights
+- [ ] Calendar optimization
+- [ ] Time tracking
+
+## Technical Debt & Improvements
+
+### Code Quality
+- [ ] Add type hints throughout
+- [ ] Improve error messages
+- [ ] Add logging framework
+- [ ] Performance optimization
+
+### Testing
+- [ ] Integration test suite
+- [ ] End-to-end tests
+- [ ] Performance benchmarks
+- [ ] Security testing
+
+### Documentation
+- [ ] API documentation
+- [ ] Video tutorials
+- [ ] Migration guides
+- [ ] Troubleshooting guide
+
+### Platform Support
+- [ ] Windows testing and fixes
+- [ ] Linux compatibility
+- [ ] Package for Homebrew
+- [ ] Docker image for containerized deployment
+
+## Community Features
+
+### Extensibility
+- [ ] Plugin architecture
+- [ ] Custom formatter API
+- [ ] Webhook support
+- [ ] Template marketplace
+
+### Integrations
+- [ ] Google Calendar support
+- [ ] Notion export
+- [ ] Roam Research sync
+- [ ] CalDAV protocol
+
+## Research & Exploration
+
+### Potential Features
+- Voice command interface
+- Mobile companion app
+- Browser extension
+- Obsidian plugin version
+- Multi-language support
+
+### Enterprise Features
+- SSO integration
+- Audit logging
+- Compliance tools
+- Bulk provisioning
+
+## Release Schedule
+
+- **v0.1.0** - Current release (basic sync)
+- **v0.2.0** - Q1 2024 (enhanced sync)
+- **v0.3.0** - Q2 2024 (GTD integration)
+- **v0.4.0** - Q3 2024 (intelligence)
+- **v0.5.0** - Q4 2024 (collaboration)
+- **v1.0.0** - 2025 (full feature set)
 
 ## Contributing
 
-We welcome community input on our roadmap! Please:
-1. Open an issue to discuss new feature ideas
-2. Vote on existing feature requests
-3. Submit PRs for features marked as "help wanted"
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to contribute to these goals.

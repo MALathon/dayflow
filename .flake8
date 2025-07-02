@@ -12,7 +12,7 @@ exclude =
     venv
 per-file-ignores =
     tests/core/test_html_to_markdown_real_world.py:E501
-    examples/integration_example.py:E501
+    docs/examples/integration_example.py:E501
     tests/core/test_graph_client.py:E501
     tests/core/test_obsidian_formatter.py:E501
     tests/integration/test_html_cleanup_integration.py:E501
