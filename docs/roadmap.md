@@ -37,7 +37,33 @@
 - [ ] Sync status reporting
 - [ ] Multiple calendar support
 
-## Phase 3: GTD Integration (v0.3.0)
+## Phase 3: Enhanced Sync & Token Management (v0.3.0)
+
+### Enhanced Manual Token Management
+- [ ] Token expiry monitoring with proactive warnings
+- [ ] Token refresh reminders (configurable alerts)
+- [ ] Multiple token storage (work/personal accounts)
+- [ ] Token validation on startup with clear error messages
+
+### Pseudo-Continuous Sync
+- [ ] Scheduled sync setup guides (cron/Task Scheduler)
+- [ ] File watcher for manual sync triggers
+- [ ] Incremental sync to minimize API calls
+- [ ] Smart sync intervals based on calendar patterns
+
+### Background Sync Service (Local)
+- [ ] Local daemon for periodic syncs
+- [ ] System tray application for sync status
+- [ ] Offline change queue for later sync
+- [ ] Conflict detection and resolution
+
+### Sync Status Indicators
+- [ ] `.sync_status` file tracking in vault
+- [ ] Status badges in daily notes
+- [ ] Comprehensive sync history log
+- [ ] Error tracking with actionable messages
+
+## Phase 4: GTD Integration (v0.4.0)
 
 ### Task Extraction
 - [ ] Extract action items from meeting notes
@@ -46,7 +72,7 @@
 - [ ] Link tasks to source meetings
 
 ### GTD Workflow Commands
-- [ ] `dayflow gtd process` - Process inbox
+- [ ] Complete `dayflow gtd process` implementation
 - [ ] `dayflow gtd review` - Weekly review helper
 - [ ] Project/task tracking
 - [ ] Waiting-for automation

@@ -4,19 +4,34 @@
 
 This document outlines the planned features and improvements for Dayflow, organized by release milestones.
 
-## Version 0.3.0 - Continuous Sync & Authentication
+## Version 0.3.0 - Enhanced Sync & Token Management
 
 ### Goals
-- Implement proper OAuth authentication flow
-- Enable continuous background synchronization
-- Improve token management and refresh
+- Provide continuous-sync-like functionality within enterprise constraints
+- Improve manual token workflow with better UX
+- Enable background synchronization without webhooks
 
 ### Features
-- [ ] OAuth 2.0 authentication flow with Microsoft
-- [ ] Automatic token refresh mechanism
-- [ ] Background sync service (daemon mode)
-- [ ] Webhook support for real-time updates
-- [ ] Sync status indicators in vault
+- [ ] Enhanced Manual Token Management
+  - [ ] Token expiry monitoring with proactive warnings
+  - [ ] Token refresh reminders (configurable alerts)
+  - [ ] Multiple token storage (work/personal accounts)
+  - [ ] Token validation on startup with clear error messages
+- [ ] Pseudo-Continuous Sync
+  - [ ] Scheduled sync setup guides (cron/Task Scheduler)
+  - [ ] File watcher for manual sync triggers
+  - [ ] Incremental sync to minimize API calls
+  - [ ] Smart sync intervals based on calendar patterns
+- [ ] Background Sync Service (Local)
+  - [ ] Local daemon for periodic syncs
+  - [ ] System tray application for sync status
+  - [ ] Offline change queue for later sync
+  - [ ] Conflict detection and resolution
+- [ ] Sync Status Indicators
+  - [ ] `.sync_status` file tracking in vault
+  - [ ] Status badges in daily notes
+  - [ ] Comprehensive sync history log
+  - [ ] Error tracking with actionable messages
 
 ## Version 0.4.0 - GTD Integration
 

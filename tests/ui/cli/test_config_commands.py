@@ -5,8 +5,7 @@ Test cases for config management CLI commands.
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-import yaml
+import yaml  # type: ignore
 from click.testing import CliRunner
 
 from dayflow.ui.cli import cli
@@ -18,7 +17,6 @@ class TestConfigCommands:
     def setup_method(self):
         self.runner = CliRunner()
 
-    @pytest.mark.tdd
     def test_config_show(self):
         """Test showing current configuration."""
         with self.runner.isolated_filesystem():
@@ -45,7 +43,6 @@ class TestConfigCommands:
             assert "path: /test/vault" in result.output
             assert "calendar_events: Meetings" in result.output
 
-    @pytest.mark.tdd
     def test_config_show_no_config(self):
         """Test showing config when none exists."""
         with self.runner.isolated_filesystem():
@@ -55,7 +52,6 @@ class TestConfigCommands:
             assert "No configuration found" in result.output
             assert "dayflow vault init" in result.output
 
-    @pytest.mark.tdd
     def test_config_path(self):
         """Test showing config file path."""
         with self.runner.isolated_filesystem():
@@ -67,7 +63,6 @@ class TestConfigCommands:
             # Also check for the directory name (with either separator)
             assert ".dayflow" in result.output or ".dayflow\\" in result.output
 
-    @pytest.mark.tdd
     def test_config_edit(self):
         """Test opening config in editor."""
         with self.runner.isolated_filesystem():
@@ -89,7 +84,6 @@ class TestConfigCommands:
                 # Check file was updated
                 assert "/new/vault" in config_file.read_text()
 
-    @pytest.mark.tdd
     def test_config_reset(self):
         """Test resetting configuration to defaults."""
         with self.runner.isolated_filesystem():
@@ -112,7 +106,6 @@ class TestConfigCommands:
             assert config["vault"]["path"] == ""  # Default empty path
             assert "custom" not in config["vault"]  # Custom field removed
 
-    @pytest.mark.tdd
     def test_config_get_value(self):
         """Test getting specific config value."""
         with self.runner.isolated_filesystem():
@@ -138,7 +131,6 @@ class TestConfigCommands:
             assert result.exit_code == 0
             assert "Meetings" in result.output
 
-    @pytest.mark.tdd
     def test_config_set_value(self):
         """Test setting specific config value."""
         with self.runner.isolated_filesystem():

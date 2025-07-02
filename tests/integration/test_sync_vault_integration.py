@@ -63,7 +63,6 @@ class TestSyncVaultIntegration:
             },
         ]
 
-    @pytest.mark.tdd
     @patch("dayflow.core.sync.GraphAPIClient")
     def test_sync_creates_notes_in_vault(
         self, mock_graph_client, vault_connection, mock_graph_events

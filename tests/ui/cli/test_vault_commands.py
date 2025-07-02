@@ -5,8 +5,7 @@ Test cases for vault-related CLI commands.
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-import yaml
+import yaml  # type: ignore
 from click.testing import CliRunner
 
 from dayflow.ui.cli import cli
@@ -18,7 +17,6 @@ class TestVaultCommands:
     def setup_method(self):
         self.runner = CliRunner()
 
-    @pytest.mark.tdd
     def test_vault_init_interactive(self):
         """Test interactive vault initialization."""
         with self.runner.isolated_filesystem():
@@ -61,7 +59,6 @@ class TestVaultCommands:
             assert result.exit_code == 0
             assert "Applied PARA template" in result.output
 
-    @pytest.mark.tdd
     def test_vault_set_path(self):
         """Test setting vault path."""
         with self.runner.isolated_filesystem():
@@ -85,7 +82,6 @@ class TestVaultCommands:
             config = yaml.safe_load(config_file.read_text())
             assert config["vault"]["path"] == str(new_vault)
 
-    @pytest.mark.tdd
     def test_vault_set_location(self):
         """Test setting location for content type."""
         with self.runner.isolated_filesystem():
@@ -119,7 +115,6 @@ class TestVaultCommands:
         assert "time_based" in result.output
         assert "zettelkasten" in result.output
 
-    @pytest.mark.tdd
     def test_vault_apply_template(self):
         """Test applying a template."""
         with self.runner.isolated_filesystem():
@@ -139,7 +134,6 @@ class TestVaultCommands:
             assert "gtd_inbox" in config["vault"]["locations"]
             assert config["vault"]["locations"]["gtd_inbox"] == "00-Inbox"
 
-    @pytest.mark.tdd
     def test_vault_status(self):
         """Test showing vault status."""
         with self.runner.isolated_filesystem():
@@ -170,7 +164,6 @@ class TestVaultCommands:
             assert "calendar_events: Meetings" in result.output
             assert "daily_notes: Daily Notes" in result.output
 
-    @pytest.mark.tdd
     def test_vault_validate(self):
         """Test vault validation."""
         with self.runner.isolated_filesystem():
@@ -202,7 +195,6 @@ class TestVaultCommands:
             assert result.exit_code != 0
             assert "Vault path does not exist" in result.output
 
-    @pytest.mark.tdd
     def test_vault_auto_detect(self):
         """Test automatic vault detection."""
         with self.runner.isolated_filesystem():
