@@ -3,6 +3,7 @@
 import base64
 import json
 import subprocess
+import sys
 import webbrowser
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -860,12 +861,13 @@ def note(title, link_meeting, editor, template):
 
         additional_lines = []
         try:
-            # Collect lines until EOF (Ctrl+D)
-            while True:
-                line = click.prompt(
-                    "", default="", show_default=False, prompt_suffix=""
-                )
-                additional_lines.append(line)
+            # Read from stdin until EOF - more compatible with Python 3.8
+            stdin = click.get_text_stream("stdin")
+            user_input = stdin.read()
+            if user_input:
+                # Split into lines, removing the EOF character if present
+                lines = user_input.rstrip("\x04").split("\n")
+                additional_lines = [line.rstrip() for line in lines if line.strip()]
         except (click.Abort, EOFError, KeyboardInterrupt):
             # User pressed Ctrl+D or Ctrl+C
             pass
@@ -909,16 +911,19 @@ def note(title, link_meeting, editor, template):
         traceback.print_exc()
         raise click.Abort()
 
-    # Offer to open in Obsidian (only in interactive mode)
-    try:
-        if click.confirm("Open in Obsidian?", default=False):
-            vault_name = config.vault_path.name
-            relative_path = note_path.relative_to(config.vault_path)
-            obsidian_url = f"obsidian://open?vault={vault_name}&file={relative_path}"
-            webbrowser.open(obsidian_url)
-    except Exception:
-        # Don't fail if opening in Obsidian fails
-        pass
+    # Offer to open in Obsidian (only in interactive mode with a terminal)
+    if not editor and sys.stdin.isatty():
+        try:
+            if click.confirm("Open in Obsidian?", default=False):
+                vault_name = config.vault_path.name
+                relative_path = note_path.relative_to(config.vault_path)
+                obsidian_url = (
+                    f"obsidian://open?vault={vault_name}&file={relative_path}"
+                )
+                webbrowser.open(obsidian_url)
+        except Exception:
+            # Don't fail if opening in Obsidian fails
+            pass
 
 
 @cli.group()

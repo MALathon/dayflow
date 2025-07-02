@@ -21,6 +21,11 @@ help:
 	@echo "  make test-act-ubuntu  - Test Ubuntu with Python 3.11"
 	@echo "  make test-act-windows - Test Windows with Python 3.11"
 	@echo "  make test-act-macos   - Test macOS with Python 3.11"
+	@echo "  make test-act-py38    - Test Python 3.8 on Ubuntu"
+	@echo "  make test-act-py39    - Test Python 3.9 on Ubuntu"
+	@echo "  make test-act-all-ubuntu   - Test all Python versions on Ubuntu"
+	@echo "  make test-act-all-os-py38  - Test Python 3.8 on all platforms"
+	@echo "  make test-act-all-os-py39  - Test Python 3.9 on all platforms"
 	@echo ""
 	@echo "Code Quality:"
 	@echo "  make lint          - Run code linting (flake8 + mypy)"
@@ -101,7 +106,7 @@ test-ci:
 	pytest -m "not tdd" --cov=dayflow --cov-report=xml --cov-report=term
 	@echo "✅ All CI/CD checks passed!"
 
-# Act testing targets
+# Act testing targets - single Python version
 test-act:
 	@echo "Running tests in GitHub Actions environment (Ubuntu, Python 3.11)..."
 	act -j test --matrix os:ubuntu-latest --matrix python-version:3.11
@@ -117,6 +122,27 @@ test-act-windows:
 test-act-macos:
 	@echo "Testing macOS with Python 3.11..."
 	act -j test --matrix os:macos-latest --matrix python-version:3.11
+
+# Act testing targets - specific Python versions
+test-act-py38:
+	@echo "Testing Python 3.8 on Ubuntu..."
+	act -j test --matrix os:ubuntu-latest --matrix python-version:3.8
+
+test-act-py39:
+	@echo "Testing Python 3.9 on Ubuntu..."
+	act -j test --matrix os:ubuntu-latest --matrix python-version:3.9
+
+test-act-py310:
+	@echo "Testing Python 3.10 on Ubuntu..."
+	act -j test --matrix os:ubuntu-latest --matrix python-version:3.10
+
+test-act-py311:
+	@echo "Testing Python 3.11 on Ubuntu..."
+	act -j test --matrix os:ubuntu-latest --matrix python-version:3.11
+
+test-act-py312:
+	@echo "Testing Python 3.12 on Ubuntu..."
+	act -j test --matrix os:ubuntu-latest --matrix python-version:3.12
 
 # Run act tests for all Python versions on a specific OS
 test-act-all-ubuntu:
@@ -162,3 +188,18 @@ release: build
 	@echo "To upload to PyPI:"
 	@echo "  python -m twine upload dist/*"
 	@echo "Make sure you have configured ~/.pypirc with your credentials"
+
+# Test specific Python version on all OSes
+test-act-all-os-py38:
+	@echo "Testing Python 3.8 on all platforms..."
+	@for os in ubuntu-latest windows-latest macos-latest; do \
+		echo "Testing on $$os..."; \
+		act -j test --matrix os:$$os --matrix python-version:3.8; \
+	done
+
+test-act-all-os-py39:
+	@echo "Testing Python 3.9 on all platforms..."
+	@for os in ubuntu-latest windows-latest macos-latest; do \
+		echo "Testing on $$os..."; \
+		act -j test --matrix os:$$os --matrix python-version:3.9; \
+	done
