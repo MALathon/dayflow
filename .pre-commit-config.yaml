@@ -35,3 +35,10 @@ repos:
       - id: mypy
         additional_dependencies: [types-requests, types-PyYAML]
         args: ["--ignore-missing-imports"]
+
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.15
+    hooks:
+      - id: validate-pyproject
+        name: Validate pyproject.toml
+        description: Validate pyproject.toml against PEP standards
