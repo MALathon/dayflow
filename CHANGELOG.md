@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.1] - 2025-01-02
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Changed
+- Repository moved to MALathon/dayflow
+- Updated all badges and URLs
+- Fixed Python 3.8/3.9 compatibility issues
+
+## [0.0.9] - 2025-07-02 (Pre-release)
 
 ### Added
 - Date-based folder organization for calendar events
@@ -34,7 +44,7 @@ All notable changes to this project will be documented in this file.
 - Current meeting selection logic for all-day vs regular events
 - Windows path compatibility in tests
 
-## [0.1.0] - 2024-01-16
+## [0.0.1] - 2024-01-16 (Initial development)
 
 ### Added
 - Initial release with basic calendar synchronization
