@@ -95,9 +95,6 @@ python_functions = "test_*"
 addopts = [
     "-ra",
     "--strict-markers",
-    "--cov=dayflow",
-    "--cov-branch",
-    "--cov-report=term-missing:skip-covered",
 ]
 markers = [
     "integration: Integration tests that require full system setup",
