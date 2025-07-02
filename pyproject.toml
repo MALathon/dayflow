@@ -12,7 +12,7 @@ authors = [
     {name = "Mark Lifson", email = "mlifson@gmail.com"},
 ]
 maintainers = [
-    {name = "Mark Lifson", email = "mlifson@@gmail.com"},
+    {name = "Mark Lifson", email = "mlifson@gmail.com"},
 ]
 requires-python = ">=3.8"
 keywords = ["obsidian", "calendar", "microsoft", "sync", "productivity"]
