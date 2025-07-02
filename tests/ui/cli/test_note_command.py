@@ -57,7 +57,7 @@ class TestNoteCommand:
             result = runner.invoke(
                 cli,
                 ["note", "--title", "Test Note", "--no-link-meeting"],
-                input="\nn\n",
+                input="\x04n\n",
             )
 
             if result.exit_code != 0:
@@ -93,7 +93,7 @@ class TestNoteCommand:
             mock_matcher.return_value = matcher_instance
 
             result = runner.invoke(
-                cli, ["note", "--title", "Meeting Notes"], input="\nn\n"
+                cli, ["note", "--title", "Meeting Notes"], input="\x04n\n"
             )
 
             assert result.exit_code == 0
@@ -124,7 +124,7 @@ class TestNoteCommand:
             mock_matcher.return_value = matcher_instance
 
             result = runner.invoke(
-                cli, ["note", "--title", "Pre-meeting Prep"], input="\nn\n"
+                cli, ["note", "--title", "Pre-meeting Prep"], input="\x04n\n"
             )
 
             assert result.exit_code == 0
@@ -143,7 +143,7 @@ class TestNoteCommand:
             result = runner.invoke(
                 cli,
                 ["note", "--title", "Team Sync", "--template", "meeting"],
-                input="\nn\n",
+                input="\x04n\n",
             )
 
             assert result.exit_code == 0
@@ -163,7 +163,7 @@ class TestNoteCommand:
             result = runner.invoke(
                 cli,
                 ["note", "--title", "New Feature Idea", "--template", "idea"],
-                input="\nn\n",
+                input="\x04n\n",
             )
 
             assert result.exit_code == 0
@@ -240,7 +240,7 @@ class TestNoteCommand:
 
         with patch("dayflow.core.meeting_matcher.MeetingMatcher"):
             result = runner.invoke(
-                cli, ["note", "--title", "Project: Alpha/Beta"], input="\nn\n"
+                cli, ["note", "--title", "Project: Alpha/Beta"], input="\x04n\n"
             )
 
             assert result.exit_code == 0
