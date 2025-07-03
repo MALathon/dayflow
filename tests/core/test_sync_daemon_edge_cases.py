@@ -103,6 +103,12 @@ class TestSyncDaemonEdgeCases:
 
     def test_status_file_permission_error(self, mock_engine, tmp_path):
         """Test handling when status file cannot be written due to permissions."""
+        import platform
+
+        # Skip on Windows as file permissions work differently
+        if platform.system() == "Windows":
+            pytest.skip("File permission test not applicable on Windows")
+
         # Create a read-only directory
         read_only_dir = tmp_path / ".dayflow"
         read_only_dir.mkdir()
@@ -118,11 +124,12 @@ class TestSyncDaemonEdgeCases:
                     # Try to save status
                     manager._save_status()
 
-                    # Should show warning but not crash
+                    # Should show warning but not crash (err=True sends to stderr)
                     warning_calls = [
                         call
                         for call in mock_echo.call_args_list
                         if "Warning: Could not save sync status" in str(call)
+                        and call.kwargs.get("err") is True
                     ]
                     assert len(warning_calls) > 0
             finally:
