@@ -1,6 +1,6 @@
-.PHONY: help install install-dev test test-v test-cov test-failed test-watch test-unit test-integration test-cli test-new test-all test-ci test-act test-act-ubuntu test-act-windows test-act-macos clean lint format check docs build release
+.PHONY: help install install-dev test test-v test-cov test-failed test-watch test-unit test-integration test-cli test-new test-all test-ci test-act test-act-ubuntu test-act-windows test-act-macos clean lint format check docs build release release-check release-draft publish
 
-help:
+help:  ## Show this help message
 	@echo "Development Commands:"
 	@echo "  make install       - Install package in development mode"
 	@echo "  make install-dev   - Install with development dependencies"
@@ -32,11 +32,16 @@ help:
 	@echo "  make format        - Format code with black and isort"
 	@echo "  make check         - Check formatting without changing files"
 	@echo ""
+	@echo "Release Commands:"
+	@echo "  make release-check - Check current version and unreleased changes"
+	@echo "  make release VERSION=X.Y.Z - Create a new release"
+	@echo "  make release-draft VERSION=X.Y.Z - Create a draft release"
+	@echo ""
 	@echo "Other Commands:"
 	@echo "  make clean         - Remove cache and build files"
 	@echo "  make docs          - Build documentation"
 	@echo "  make build         - Build distribution packages"
-	@echo "  make release       - Upload to PyPI (configure credentials first)"
+	@echo "  make publish       - Upload to PyPI (configure credentials first)"
 
 install:
 	pip install -e .
@@ -184,7 +189,24 @@ docs:
 build: clean
 	python -m build
 
-release: build
+release-check:  ## Check current version and unreleased changes
+	@python scripts/release.py --check
+
+release:  ## Create a new release (usage: make release VERSION=0.3.0)
+	@if [ -z "$(VERSION)" ]; then \
+		echo "Error: VERSION is required. Usage: make release VERSION=0.3.0"; \
+		exit 1; \
+	fi
+	@python scripts/release.py $(VERSION)
+
+release-draft:  ## Create a draft release (usage: make release-draft VERSION=0.3.0)
+	@if [ -z "$(VERSION)" ]; then \
+		echo "Error: VERSION is required. Usage: make release-draft VERSION=0.3.0"; \
+		exit 1; \
+	fi
+	@python scripts/release.py $(VERSION) --draft
+
+publish: build  ## Upload to PyPI
 	@echo "To upload to PyPI:"
 	@echo "  python -m twine upload dist/*"
 	@echo "Make sure you have configured ~/.pypirc with your credentials"
