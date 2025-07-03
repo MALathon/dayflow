@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Known Issues
+- Daily notes do not support folder organization (all stored in flat "Daily Notes" folder)
+  - Workaround: Manually organize after creation
+  - Planned fix: Add `calendar.daily_notes_organization` config option
+
 ## [0.2.0] - 2025-07-02
 
 ### Added
