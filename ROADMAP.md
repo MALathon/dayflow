@@ -59,10 +59,8 @@
 ### 🚧 Current Limitations
 - Manual token refresh required (~24 hour expiry)
 - Read-only calendar access
-- No continuous sync (command exists but not implemented)
 - Limited to personal calendar
 - No automated OAuth flow (manual token entry only)
-- No background sync service
 - No conflict resolution
 - No dry-run mode for sync
 - No progress indicators for long operations
@@ -76,6 +74,7 @@ dayflow auth login         # Manual token authentication
 
 # Daily usage
 dayflow sync               # Sync today's events
+dayflow sync --continuous  # Run continuous sync during workday (10 min intervals)
 dayflow sync --start 2024-01-01 --end 2024-01-07  # Sync date range
 dayflow note -t "Meeting notes"  # Create quick note with meeting context
 
@@ -90,25 +89,20 @@ dayflow zettel literature -t "Notes on Article" -s "Article Title" -a "Author"
 dayflow zettel suggest     # Find unprocessed literature notes
 ```
 
-## Phase 2: Enhanced Sync (v0.2.0)
+## Phase 2: Enhanced Sync (v0.2.0) - COMPLETED ✅
 
-### Automatic Token Management
-- [ ] Implement token refresh mechanism
-- [ ] Store refresh tokens securely
-- [ ] Background token renewal
-- [ ] Token expiry notifications
+### Continuous Sync - COMPLETED ✅
+- [x] Implement sync daemon with graceful shutdown
+- [x] Configurable sync intervals (default 10 minutes)
+- [x] Sync status tracking and persistence
+- [x] Show sync status in `dayflow status` command
+- [x] Helpful prompt when token expires during sync
 
-### Continuous Sync
-- [ ] Implement sync daemon/service
-- [ ] Configurable sync intervals
-- [ ] Change detection to avoid duplicates
-- [ ] System tray integration (optional)
-
-### Sync Improvements
-- [ ] Incremental sync (only changes)
-- [ ] Conflict resolution
-- [ ] Sync status reporting
-- [ ] Multiple calendar support
+### Progress Indicators - COMPLETED ✅
+- [x] Add progress messages for sync operations
+- [x] Show "X of Y events" during sync
+- [x] Add countdown timer for next sync in continuous mode
+- [x] Add --quiet flag for scripts
 
 ## Phase 3: Enhanced Sync & Token Management (v0.3.0)
 
@@ -249,12 +243,12 @@ dayflow zettel suggest     # Find unprocessed literature notes
 
 ## Release Schedule
 
-- **v0.1.0** - Current release (basic sync)
-- **v0.2.0** - Q1 2024 (enhanced sync)
-- **v0.3.0** - Q2 2024 (GTD integration)
-- **v0.4.0** - Q3 2024 (intelligence)
-- **v0.5.0** - Q4 2024 (collaboration)
-- **v1.0.0** - 2025 (full feature set)
+- **v0.1.0** - July 2025 (basic sync) ✅
+- **v0.2.0** - July 2025 (enhanced sync) ✅
+- **v0.3.0** - Q3 2025 (token management)
+- **v0.4.0** - Q4 2025 (GTD integration)
+- **v0.5.0** - Q1 2026 (collaboration)
+- **v1.0.0** - 2026 (full feature set)
 
 ## Contributing
 

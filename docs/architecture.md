@@ -106,7 +106,7 @@ The CurrentMeetingManager maintains a live link to the active meeting:
 
 Due to Microsoft Graph Explorer limitations:
 - Tokens must be manually obtained
-- Tokens expire after ~1 hour
+- Tokens expire after ~24 hours
 - Future versions will implement OAuth flow
 
 ### 4. Extensibility Points

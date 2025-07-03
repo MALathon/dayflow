@@ -1,0 +1,8 @@
+vault:
+  locations:
+    calendar_events: Calendar Events
+    daily_notes: Daily Notes
+    gtd_inbox: Inbox
+    people: People
+    zettel_permanent: Permanent Notes
+  path: ''

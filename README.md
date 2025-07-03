@@ -94,7 +94,10 @@ This will:
 ### Calendar Sync
 - `dayflow sync` - Sync calendar events (default: yesterday to 7 days ahead)
 - `dayflow sync --start 2024-01-01 --end 2024-01-31` - Sync specific date range
+- `dayflow sync --continuous` - Run continuous sync with 10-minute intervals (NEW in v0.2.0!)
+- `dayflow sync --continuous --interval 15` - Custom sync interval
 - `dayflow sync --no-daily-summary` - Skip daily summary generation
+- `dayflow sync --quiet` - Suppress progress indicators (for scripts)
 
 ### Note Creation
 - `dayflow note -t "Title"` - Create a quick note
@@ -208,7 +211,7 @@ docs/               # Documentation and examples
 
 ## Limitations
 
-- Requires manual token refresh (tokens expire after ~1 hour)
+- Requires manual token refresh (tokens expire after ~24 hours)
 - Read-only calendar access (cannot create/modify events)
 - Mayo Clinic: Requires manual token workflow due to security policies
 
