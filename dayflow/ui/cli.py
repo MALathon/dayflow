@@ -12,44 +12,11 @@ import click
 import yaml
 
 from dayflow import __version__
-
-
-def format_progress_message(current: int, total: int) -> str:
-    """Format progress message for event processing."""
-    return f"Processing event {current} of {total}..."
-
-
-def sync_with_progress(engine, start_date, end_date):
-    """Perform sync with progress indicators."""
-    events_synced = 0
-
-    def progress_callback(action, **kwargs):
-        nonlocal events_synced
-
-        if action == "fetch_start":
-            click.echo("Fetching calendar events...")
-        elif action == "fetch_complete":
-            events_synced = kwargs.get("total", 0)
-            click.echo(f"Found {events_synced} events to sync")
-        elif action == "process_event":
-            current = kwargs.get("current", 0)
-            total = kwargs.get("total", 0)
-            click.echo(format_progress_message(current, total))
-        elif action == "sync_complete":
-            click.echo("\nSync complete!")
-        elif action == "fetch_error":
-            error = kwargs.get("error", "Unknown error")
-            click.echo(f"\nError fetching events: {error}", err=True)
-
-    # Perform sync with progress callback without using progressbar
-    # The progress callbacks will handle the display
-    result = engine.sync(
-        start_date=start_date,
-        end_date=end_date,
-        progress_callback=progress_callback,
-    )
-
-    return result
+from dayflow.ui.progress import (
+    create_summary_box,
+    pretty_print_status,
+    sync_with_pretty_progress,
+)
 
 
 def get_token_info():
@@ -321,43 +288,48 @@ def sync(start, end, continuous, interval, no_daily_summary, quiet):  # noqa: F8
                 click.echo("Syncing events with default date range...")
 
             # Perform sync with progress indicators if not quiet
-            if quiet:
-                result = engine.sync(start_date=start_date, end_date=end_date)
-            else:
-                result = sync_with_progress(engine, start_date, end_date)
+            result = sync_with_pretty_progress(
+                engine, start_date, end_date, quiet=quiet
+            )
 
-            # Display results
-            if result:
+            # Display results with pretty summary
+            if result and not quiet:
                 events_synced = result.get("events_synced", 0)
                 notes_created = result.get("notes_created", 0)
                 notes_updated = result.get("notes_updated", 0)
                 daily_created = result.get("daily_summaries_created", 0)
                 daily_updated = result.get("daily_summaries_updated", 0)
-                # sync_time = result.get("sync_time")  # TODO: Use for display
 
-                click.echo(f"\n✓ Synced {events_synced} active events")
+                # Create summary box
+                summary_items = [
+                    ("Events synced", events_synced),
+                    ("Notes created", notes_created),
+                    ("Notes updated", notes_updated),
+                ]
 
-                if vault_connection:
-                    if notes_created > 0:
-                        click.echo(f"✓ Created {notes_created} new meeting notes")
-                    if notes_updated > 0:
-                        click.echo(f"✓ Updated {notes_updated} existing meeting notes")
-                    if notes_created == 0 and notes_updated == 0 and events_synced > 0:
-                        click.echo("  (All events already have notes)")
+                if daily_created + daily_updated > 0:
+                    summary_items.extend(
+                        [
+                            ("Daily summaries created", daily_created),
+                            ("Daily summaries updated", daily_updated),
+                        ]
+                    )
 
-                    # Daily summary info
-                    if daily_created > 0 or daily_updated > 0:
-                        click.echo("")
-                        if daily_created > 0:
-                            click.echo(
-                                f"📅 Created {daily_created} daily summary note"
-                                f"{'s' if daily_created != 1 else ''}"
-                            )
-                        if daily_updated > 0:
-                            click.echo(
-                                f"📅 Updated {daily_updated} daily summary note"
-                                f"{'s' if daily_updated != 1 else ''}"
-                            )
+                click.echo("\n" + create_summary_box("📊 Sync Summary", summary_items))
+
+                # Additional info
+                if daily_created > 0 or daily_updated > 0:
+                    click.echo("")
+                    if daily_created > 0:
+                        click.echo(
+                            f"📅 Created {daily_created} daily summary note"
+                            f"{'s' if daily_created != 1 else ''}"
+                        )
+                    if daily_updated > 0:
+                        click.echo(
+                            f"📅 Updated {daily_updated} daily summary note"
+                            f"{'s' if daily_updated != 1 else ''}"
+                        )
                 else:
                     click.echo("  (No notes created - vault not configured)")
 
@@ -1348,16 +1320,18 @@ def config_set(key, value):
 @cli.command()
 def status():
     """Show system status and health."""
-    click.echo("System Status")
-    click.echo("=" * 40)
+    # Gather all status information
+    status_info = {}
 
     # Check authentication
     token_info = get_token_info()
-    if token_info and token_info["valid"]:
+    status_info["auth_valid"] = token_info and token_info["valid"]
+    if status_info["auth_valid"]:
         hours_left = (token_info["expires_at"] - datetime.now()).total_seconds() / 3600
-        click.echo(f"✅ Authentication: Valid ({hours_left:.1f} hours remaining)")
-    else:
-        click.echo("❌ Authentication: No valid token")
+        status_info["token_info"] = {
+            "expires_in_hours": hours_left,
+            "expires_at": token_info["expires_at"],
+        }
 
     # Check vault configuration
     try:
@@ -1365,13 +1339,32 @@ def status():
 
         config = VaultConfig()
         config.validate()
-        click.echo(f"✅ Vault: {config.vault_path}")
-    except Exception as e:
-        click.echo(f"❌ Vault: Not configured ({e})")
+        status_info["vault_configured"] = True
+        status_info["vault_path"] = str(config.vault_path)
+    except Exception:
+        status_info["vault_configured"] = False
 
-    # Check current meeting context
-    click.echo("\nMeeting Context")
-    click.echo("-" * 40)
+    # Check sync status
+    try:
+        from dayflow.core.sync_status import get_sync_status
+
+        sync_status = get_sync_status()
+        if sync_status:
+            last_sync = sync_status.get("last_sync")
+            if last_sync:
+                last_sync_dt = datetime.fromisoformat(last_sync)
+                time_ago = datetime.now() - last_sync_dt
+                if time_ago.days > 0:
+                    display = f"{time_ago.days} days ago"
+                elif time_ago.seconds > 3600:
+                    display = f"{time_ago.seconds // 3600} hours ago"
+                else:
+                    display = f"{time_ago.seconds // 60} minutes ago"
+
+                sync_status["last_sync_display"] = display
+            status_info["sync_status"] = sync_status
+    except Exception:
+        pass
 
     try:
         from dayflow.core.meeting_matcher import MeetingMatcher
@@ -1381,16 +1374,20 @@ def status():
         matcher = MeetingMatcher(config.vault_path)
         meeting_path = config.get_location("calendar_events")
 
+        meeting_context = {}
+
         if meeting_path and meeting_path.exists():
             # Current meeting
             current = matcher.find_current_meeting(meeting_path)
             if current:
-                click.echo(f"📍 Current: {current['title']}")
-                click.echo(f"   Started: {current['start_time'].strftime('%H:%M')}")
-                if current.get("location"):
-                    click.echo(f"   Location: {current['location']}")
-            else:
-                click.echo("📍 Current: No active meeting")
+                meeting_context["current_meeting"] = {
+                    "subject": current["title"],
+                    "start_time": current["start_time"].strftime("%H:%M"),
+                    "end_time": current.get("end_time", "").strftime("%H:%M")
+                    if current.get("end_time")
+                    else "ongoing",
+                    "location": current.get("location"),
+                }
 
             # Upcoming meeting
             upcoming = matcher.find_upcoming_meeting(meeting_path)
@@ -1398,45 +1395,21 @@ def status():
                 mins_until = (
                     upcoming["start_time"] - datetime.now(timezone.utc)
                 ).total_seconds() / 60
-                click.echo(
-                    f"🔜 Next: {upcoming['title']} (in {int(mins_until)} minutes)"
-                )
+                meeting_context["next_meeting"] = {
+                    "subject": upcoming["title"],
+                    "start_time": upcoming["start_time"].strftime("%H:%M"),
+                    "time_until": f"{int(mins_until)} minutes",
+                    "location": upcoming.get("location"),
+                }
 
-            # Recent meeting
-            recent = matcher.find_recent_meeting(meeting_path)
-            if recent:
-                click.echo(f"🕐 Recent: {recent['title']}")
-        else:
-            click.echo("No meeting notes found")
-    except Exception as e:
-        click.echo(f"Unable to check meetings: {e}")
+        if meeting_context:
+            status_info["meeting_context"] = meeting_context
 
-    # Check sync status
-    from dayflow.core.sync_status import get_sync_status
+    except Exception:
+        pass
 
-    sync_status = get_sync_status()
-
-    if sync_status:
-        click.echo("\nSync Status")
-        click.echo("-" * 40)
-
-        if sync_status.get("last_sync_datetime"):
-            time_since = sync_status["time_since_last_sync"]
-            hours = int(time_since.total_seconds() / 3600)
-            minutes = int((time_since.total_seconds() % 3600) / 60)
-
-            if hours > 0:
-                time_str = f"{hours}h {minutes}m ago"
-            else:
-                time_str = f"{minutes}m ago"
-
-            click.echo(f"Last sync: {time_str}")
-            click.echo(f"Total syncs: {sync_status.get('sync_count', 0)}")
-
-            if sync_status.get("error_count", 0) > 0:
-                click.echo(f"⚠️  Errors: {sync_status['error_count']}")
-        else:
-            click.echo("No sync history available")
+    # Display pretty status
+    pretty_print_status(status_info)
 
 
 def main():

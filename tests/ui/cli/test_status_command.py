@@ -25,8 +25,8 @@ class TestStatusCommand:
             result = runner.invoke(cli, ["status"])
 
             assert result.exit_code == 0
-            assert "System Status" in result.output
-            assert "❌ Authentication: No valid token" in result.output
+            # The new format uses emoji and different text
+            assert "🔓 Authentication: Not authenticated" in result.output
 
     def test_status_valid_token(self, runner):
         """Test status with valid token."""
@@ -45,8 +45,9 @@ class TestStatusCommand:
             result = runner.invoke(cli, ["status"])
 
             assert result.exit_code == 0
-            assert "✅ Authentication: Valid" in result.output
-            assert "hours remaining" in result.output
+            # The new format uses different emoji and text
+            assert "🔐 Authentication: Valid" in result.output
+            assert "expires in" in result.output
 
     def test_status_expired_token(self, runner):
         """Test status with expired token."""
@@ -65,7 +66,7 @@ class TestStatusCommand:
             result = runner.invoke(cli, ["status"])
 
             assert result.exit_code == 0
-            assert "❌ Authentication: No valid token" in result.output
+            assert "🔓 Authentication: Not authenticated" in result.output
 
     @patch("dayflow.vault.VaultConfig")
     def test_status_vault_configured(self, mock_config, runner):
@@ -81,10 +82,9 @@ class TestStatusCommand:
 
             assert result.exit_code == 0
             # Handle both forward and backward slashes for cross-platform compatibility
-            assert (
-                "✅ Vault: /Users/test/ObsidianVault" in result.output
-                or "✅ Vault: \\Users\\test\\ObsidianVault" in result.output
-            )
+            # New format uses different emoji and shows "Configured" first
+            assert "📁 Vault: Configured" in result.output
+            assert "/Users/test/ObsidianVault" in result.output
 
     @patch("dayflow.vault.VaultConfig")
     def test_status_vault_not_configured(self, mock_config, runner):
@@ -95,8 +95,8 @@ class TestStatusCommand:
             result = runner.invoke(cli, ["status"])
 
             assert result.exit_code == 0
-            assert "❌ Vault: Not configured" in result.output
-            assert "Vault path not set" in result.output
+            # New format uses different emoji
+            assert "📂 Vault: Not configured" in result.output
 
     @patch("dayflow.vault.VaultConfig")
     @patch("dayflow.core.meeting_matcher.MeetingMatcher")

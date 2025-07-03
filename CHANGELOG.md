@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Pretty CLI Output**: Enhanced visual feedback throughout the application
+  - Progress bars that update in place instead of creating new lines
+  - Unicode box drawing for status summaries
+  - Color-coded status indicators
+  - Terminal width detection with graceful fallback
+  - Pretty sync summaries with emoji indicators
+
+### Changed
+- Continuous sync mode now uses pretty progress indicators
+- Status command displays information in structured boxes
+- Sync progress shows visual progress bars with percentages
+- Error messages are displayed with proper formatting
+
+### Fixed
+- Progress bars no longer create multiple lines of output
+- Fixed import error for `read_sync_status` in CLI status command
+
 ## [0.1.0] - 2025-07-02
 
 ### Added
