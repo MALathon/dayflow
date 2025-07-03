@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Known Issues
+- Changing `folder_organization` does not migrate existing files
+  - Risk: Can create duplicate notes for same events
+  - Workaround: Manually move files or use fresh folder
+  - Planned fix: Add `dayflow vault migrate-folders` command
 - Daily notes do not support folder organization (all stored in flat "Daily Notes" folder)
   - Workaround: Manually organize after creation
   - Planned fix: Add `calendar.daily_notes_organization` config option

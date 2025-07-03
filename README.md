@@ -62,6 +62,8 @@ pip install -e .
 
 ### Enable Folder Organization (Optional)
 
+⚠️ **WARNING**: Changing `folder_organization` after syncing will NOT move existing files. New files will be created in the new structure, potentially creating duplicates. See [Known Issues](#known-issues) below.
+
 To organize calendar events by date:
 
 ```bash
@@ -246,8 +248,15 @@ tests/              # Comprehensive test suite
 docs/               # Documentation and examples
 ```
 
-## Limitations
+## Known Issues
 
+### Folder Organization Changes
+- **⚠️ No automatic migration**: Changing `folder_organization` does NOT move existing files
+- **Potential duplicates**: Syncing after changing organization may create duplicate notes
+- **Workaround**: Manually move files or start fresh with new organization
+
+### Other Limitations
+- Daily notes don't support folder organization (always flat structure)
 - Requires manual token refresh (tokens expire after ~24 hours)
 - Read-only calendar access (cannot create/modify events)
 - Mayo Clinic: Requires manual token workflow due to security policies
