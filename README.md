@@ -62,13 +62,20 @@ pip install -e .
 
 ### Enable Folder Organization (Optional)
 
-To organize calendar events by date, add to your config:
+To organize calendar events by date:
 
 ```bash
-# Edit ~/.dayflow/config.yaml
-calendar:
-  folder_organization: year/month/day
+# Using the CLI (recommended)
+dayflow config set calendar.folder_organization year/month/day
+
+# Or edit directly
+dayflow config edit
 ```
+
+Available folder organization options:
+- `year/month/day` - Full date hierarchy (e.g., 2025/01/15/)
+- `year/week` - Weekly folders (e.g., 2025/W03/)
+- `year/month` - Monthly folders (e.g., 2025/01/)
 
 This will:
 - Create year/month/day folders automatically
@@ -115,7 +122,36 @@ This will:
 
 ## Configuration
 
-Configuration is stored in `~/.dayflow/config.yaml`:
+Configuration is stored in `~/.dayflow/config.yaml`. You can manage settings using the CLI:
+
+### View and Edit Configuration
+
+```bash
+# Show current configuration
+dayflow config show
+
+# Edit configuration in your default editor
+dayflow config edit
+
+# Show config file location
+dayflow config path
+```
+
+### Common Configuration Options
+
+```bash
+# Enable folder organization for calendar events
+dayflow config set calendar.folder_organization year/month/day
+
+# Disable daily summaries
+dayflow config set calendar.create_daily_summaries false
+
+# Change folder locations
+dayflow config set vault.locations.calendar_events "Meeting Notes"
+dayflow config set vault.locations.daily_notes "Daily Summaries"
+```
+
+### Example Configuration File
 
 ```yaml
 vault:
@@ -124,9 +160,10 @@ vault:
     calendar_events: Calendar Events
     daily_notes: Daily Notes
 
-# Optional: Enable folder organization
+# Optional settings
 calendar:
   folder_organization: year/month/day  # Options: year/month/day, year/week, year/month
+  create_daily_summaries: true         # Enable/disable daily summaries
 ```
 
 ## Folder Organization
