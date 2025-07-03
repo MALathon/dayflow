@@ -3,6 +3,7 @@
 import json
 import signal
 from datetime import datetime
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest
@@ -103,38 +104,39 @@ class TestSyncDaemonEdgeCases:
 
     def test_status_file_permission_error(self, mock_engine, tmp_path):
         """Test handling when status file cannot be written due to permissions."""
-        import platform
-
-        # Skip on Windows as file permissions work differently
-        if platform.system() == "Windows":
-            pytest.skip("File permission test not applicable on Windows")
-
-        # Create a read-only directory
-        read_only_dir = tmp_path / ".dayflow"
-        read_only_dir.mkdir()
+        # Create the .dayflow directory
+        dayflow_dir = tmp_path / ".dayflow"
+        dayflow_dir.mkdir()
 
         with patch("pathlib.Path.home", return_value=tmp_path):
             manager = ContinuousSyncManager(mock_engine, interval_minutes=1)
 
-            # Make directory read-only
-            read_only_dir.chmod(0o444)
+            # Patch the Path class write_text method to simulate permission error
+            original_write_text = Path.write_text
 
-            try:
+            def failing_write_text(self, *args, **kwargs):
+                if "sync_status.json" in str(self):
+                    raise PermissionError("Access denied")
+                return original_write_text(self, *args, **kwargs)
+
+            with patch("pathlib.Path.write_text", new=failing_write_text):
                 with patch("click.echo") as mock_echo:
                     # Try to save status
                     manager._save_status()
 
-                    # Should show warning but not crash (err=True sends to stderr)
-                    warning_calls = [
+                    # Should show warning but not crash
+                    # The warning is sent to stderr with err=True
+                    assert mock_echo.called
+                    error_calls = [
                         call
                         for call in mock_echo.call_args_list
-                        if "Warning: Could not save sync status" in str(call)
-                        and call.kwargs.get("err") is True
+                        if (
+                            len(call[0]) > 0
+                            and "Warning: Could not save sync status" in call[0][0]
+                            and call[1].get("err") is True
+                        )
                     ]
-                    assert len(warning_calls) > 0
-            finally:
-                # Restore permissions for cleanup
-                read_only_dir.chmod(0o755)
+                    assert len(error_calls) > 0
 
     def test_corrupted_status_file(self, mock_engine, tmp_path):
         """Test loading from a corrupted status file."""
