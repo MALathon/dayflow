@@ -68,9 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - No background sync service
 - Limited to primary calendar
 
-## [Unreleased]
-
-## [0.2.0] - In Development
+## [0.2.0] - 2025-07-02
 
 ### Added
 - **Continuous Sync Mode**: Run `dayflow sync --continuous` for automatic background syncing

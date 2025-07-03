@@ -94,7 +94,10 @@ This will:
 ### Calendar Sync
 - `dayflow sync` - Sync calendar events (default: yesterday to 7 days ahead)
 - `dayflow sync --start 2024-01-01 --end 2024-01-31` - Sync specific date range
+- `dayflow sync --continuous` - Run continuous sync with 10-minute intervals (NEW in v0.2.0!)
+- `dayflow sync --continuous --interval 15` - Custom sync interval
 - `dayflow sync --no-daily-summary` - Skip daily summary generation
+- `dayflow sync --quiet` - Suppress progress indicators (for scripts)
 
 ### Note Creation
 - `dayflow note -t "Title"` - Create a quick note

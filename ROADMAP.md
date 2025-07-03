@@ -89,7 +89,7 @@ dayflow zettel literature -t "Notes on Article" -s "Article Title" -a "Author"
 dayflow zettel suggest     # Find unprocessed literature notes
 ```
 
-## Phase 2: Enhanced Sync (v0.2.0) - IN PROGRESS
+## Phase 2: Enhanced Sync (v0.2.0) - COMPLETED ✅
 
 ### Continuous Sync - COMPLETED ✅
 - [x] Implement sync daemon with graceful shutdown
@@ -243,12 +243,12 @@ dayflow zettel suggest     # Find unprocessed literature notes
 
 ## Release Schedule
 
-- **v0.1.0** - Current release (basic sync)
-- **v0.2.0** - Q1 2024 (enhanced sync)
-- **v0.3.0** - Q2 2024 (GTD integration)
-- **v0.4.0** - Q3 2024 (intelligence)
-- **v0.5.0** - Q4 2024 (collaboration)
-- **v1.0.0** - 2025 (full feature set)
+- **v0.1.0** - July 2025 (basic sync) ✅
+- **v0.2.0** - July 2025 (enhanced sync) ✅
+- **v0.3.0** - Q3 2025 (token management)
+- **v0.4.0** - Q4 2025 (GTD integration)
+- **v0.5.0** - Q1 2026 (collaboration)
+- **v1.0.0** - 2026 (full feature set)
 
 ## Contributing
 

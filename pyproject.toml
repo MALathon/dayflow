@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dayflow"
-version = "0.2.0-dev"
+version = "0.2.0"
 description = "Intelligent calendar workflow system for Obsidian notes"
 readme = "README.md"
 license = {file = "LICENSE"}
