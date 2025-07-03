@@ -292,8 +292,19 @@ def pretty_print_status(status_info: dict):
         last_sync = sync_data.get("last_sync_display", "Never")
         sync_count = sync_data.get("sync_count", 0)
         error_count = sync_data.get("error_count", 0)
+        sync_mode = sync_data.get("sync_mode", "manual")
+
+        # Format sync mode display
+        if sync_mode == "continuous":
+            interval = sync_data.get("interval_minutes", 10)
+            mode_display = f"Continuous ({interval}min)"
+            mode_icon = "🔄"
+        else:
+            mode_display = "Manual"
+            mode_icon = "🔧"
 
         sync_items = [
+            ("Mode", f"{mode_icon} {mode_display}"),
             ("Last sync", last_sync),
             ("Total syncs", sync_count),
             ("Errors", error_count),

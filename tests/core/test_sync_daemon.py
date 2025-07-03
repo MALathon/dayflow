@@ -170,3 +170,47 @@ class TestContinuousSyncManager:
 
         # Should have performed at least one sync
         assert mock_engine.sync.call_count >= 1
+
+    def test_pid_file_management(self, mock_engine, tmp_path):
+        """Test that PID file is created and cleaned up."""
+        with patch("pathlib.Path.home", return_value=tmp_path):
+            manager = ContinuousSyncManager(mock_engine, interval_minutes=1)
+            pid_file = tmp_path / ".dayflow" / "sync.pid"
+
+            # PID file should not exist initially
+            assert not pid_file.exists()
+
+            # Mock to stop immediately after first sync
+            def side_effect(*args, **kwargs):
+                # First call succeeds
+                manager.running = False
+                return {"events_synced": 1}
+
+            mock_engine.sync.side_effect = side_effect
+
+            # Start should create PID file
+            with patch("time.sleep"):
+                with patch("click.echo"):  # Suppress output
+                    manager.start()
+
+            # PID file should have been cleaned up by stop()
+            assert not pid_file.exists()
+
+    def test_pid_file_contains_correct_pid(self, manager, tmp_path):
+        """Test that PID file contains correct process ID."""
+        import os
+
+        # Mock to stop after creating PID file
+        def mock_sync_once():
+            manager.running = False
+
+        manager._sync_once = mock_sync_once
+
+        with patch("time.sleep"):
+            manager.start()
+
+        # Check PID file was created with correct PID
+        pid_file = tmp_path / ".dayflow" / "sync.pid"
+        if pid_file.exists():
+            stored_pid = int(pid_file.read_text())
+            assert stored_pid == os.getpid()

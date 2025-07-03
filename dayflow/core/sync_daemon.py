@@ -1,6 +1,7 @@
 """Continuous sync daemon for Dayflow."""
 
 import json
+import os
 import signal
 import sys
 import time
@@ -34,6 +35,7 @@ class ContinuousSyncManager:
 
         # Status file location
         self.status_file = Path.home() / ".dayflow" / "sync_status.json"
+        self.pid_file = Path.home() / ".dayflow" / "sync.pid"
         self.status_file.parent.mkdir(exist_ok=True)
 
         # Load previous status if exists
@@ -53,8 +55,12 @@ class ContinuousSyncManager:
         """Start continuous sync."""
         self.running = True
 
+        # Write PID file
+        self.pid_file.write_text(str(os.getpid()))
+
         # Show startup info box
         info_items = [
+            ("Mode", "Continuous"),
             ("Interval", f"{self.interval // 60} minutes"),
             ("Total syncs", self._sync_count),
             (
@@ -77,7 +83,6 @@ class ContinuousSyncManager:
                     self._wait_with_countdown()
 
             except KeyboardInterrupt:
-                self.stop()
                 break
             except Exception as e:
                 self._error_count += 1
@@ -87,10 +92,17 @@ class ContinuousSyncManager:
                 if self.running:
                     self._wait_with_countdown()
 
+        # Always call stop when exiting the loop
+        self.stop()
+
     def stop(self):
         """Stop continuous sync."""
         self.running = False
         self._save_status()
+
+        # Remove PID file
+        if self.pid_file.exists():
+            self.pid_file.unlink()
 
         # Show final summary
         summary_items = [
